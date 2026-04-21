@@ -7,6 +7,7 @@ import { initPlanner } from "./planner.js";
 import { initMap } from "./map.js";
 import { HELP_CONTENT } from "./help-content.js";
 import { PHRASES } from "./phrases.js";
+import { attachSwipe } from "./swipe.js";
 
 const CFG = window.APP_CONFIG;
 // Auto-login: geen drempel voor het gezin — iedereen met de URL is binnen.
@@ -29,6 +30,9 @@ const state = {
   i18n: {},
   sync: null,
   online: navigator.onLine,
+  // Modal paging
+  modalList: [],
+  modalIndex: 0,
 };
 window.__state = state; // for debug
 
@@ -49,6 +53,24 @@ function applyI18n() {
     const k = el.getAttribute("data-i18n");
     if (state.i18n[k]) el.textContent = state.i18n[k];
   });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    const k = el.getAttribute("data-i18n-placeholder");
+    if (state.i18n[k]) el.setAttribute("placeholder", state.i18n[k]);
+  });
+  document.querySelectorAll("[data-i18n-aria-label]").forEach((el) => {
+    const k = el.getAttribute("data-i18n-aria-label");
+    if (state.i18n[k]) el.setAttribute("aria-label", state.i18n[k]);
+  });
+}
+
+// Per-location language fallback: try target lang, then nl, then empty.
+function locText(loc, field) {
+  if (!loc) return "";
+  return loc[`${field}_${state.lang}`] || loc[`${field}_nl`] || "";
+}
+function locList(loc, field) {
+  if (!loc) return [];
+  return loc[`${field}_${state.lang}`] || loc[`${field}_nl`] || [];
 }
 
 // ------------------------- Data loading -------------------------
@@ -71,6 +93,7 @@ function go(name, sub) {
   document.querySelectorAll(".nav-tab").forEach((b) => {
     const active = b.getAttribute("data-nav") === name;
     b.classList.toggle("tab-active", active);
+    b.setAttribute("aria-selected", active ? "true" : "false");
   });
   if (name === "map") requestAnimationFrame(() => window.__map?.invalidateSize());
   if (name === "help" && sub) renderHelpDetail(sub);
@@ -84,10 +107,6 @@ function go(name, sub) {
 // ------------------------- Dates -------------------------
 const TODAY = () => new Date().toISOString().slice(0, 10);
 function dayIndex(iso) { return CFG.DAYS.findIndex((d) => d.date === iso); }
-function addDays(iso, n) {
-  const d = new Date(iso); d.setDate(d.getDate() + n);
-  return d.toISOString().slice(0, 10);
-}
 function dateFmt(iso, lang = state.lang) {
   try {
     return new Date(iso).toLocaleDateString(lang === "zh" ? "zh-CN" : (lang === "es" ? "es-ES" : "nl-NL"),
@@ -95,10 +114,10 @@ function dateFmt(iso, lang = state.lang) {
   } catch { return iso; }
 }
 function currentTripDay() {
-  const t = TODAY();
-  if (t < CFG.TRIP_START) return { phase: "before", index: -1, iso: CFG.TRIP_START };
-  if (t > CFG.TRIP_END)   return { phase: "after",  index: -1, iso: CFG.TRIP_END };
-  const i = dayIndex(t);
+  const today = TODAY();
+  if (today < CFG.TRIP_START) return { phase: "before", index: -1, iso: CFG.TRIP_START };
+  if (today > CFG.TRIP_END)   return { phase: "after",  index: -1, iso: CFG.TRIP_END };
+  const i = dayIndex(today);
   return { phase: "during", index: i, iso: CFG.DAYS[i].date };
 }
 
@@ -124,9 +143,10 @@ function renderHome() {
   } else {
     const day = CFG.DAYS[td.index];
     titleEl.textContent = t("home_day_of", { d: td.index + 1, total: CFG.DAYS.length });
-    dcEl.textContent = `${dateFmt(day.date)} — ${day.city === "both" ? "Xi'an → Beijing" : (day.city === "xian" ? "Xi'an" : "Beijing")}`;
+    dcEl.textContent = `${dateFmt(day.date)} — ${day.city === "both" ? "Xi'an → Beijing" : cityLabel(day.city)}`;
     const remaining = CFG.DAYS.length - (td.index + 1);
-    cdEl.textContent = `${t("home_day_of", { d: td.index + 1, total: CFG.DAYS.length })} · nog ${remaining} ${remaining === 1 ? "dag" : "dagen"} te gaan`;
+    const rKey = remaining === 1 ? "home_day_remaining_one" : "home_day_remaining_other";
+    cdEl.textContent = `${t("home_day_of", { d: td.index + 1, total: CFG.DAYS.length })} · ${t(rKey, { n: remaining })}`;
   }
 
   renderNextActivity();
@@ -147,7 +167,6 @@ function renderNextActivity() {
     if (td.phase !== "during" || when >= now) { next = it; break; }
   }
   if (!next) {
-    // fallback: first upcoming item on any day
     next = state.items.find((i) => i.day >= ymd && i.status !== "done");
   }
   if (!next) {
@@ -159,7 +178,7 @@ function renderNextActivity() {
     <div class="space-y-2">
       <div class="text-[22px] font-semibold">${escapeHtml(titleOf(next, loc))}</div>
       <div class="text-ink-700">${fmtTime(next.start_time)} · ${escapeHtml(dateFmt(next.day))}</div>
-      ${loc ? `<div class="text-ink-500 text-sm">${escapeHtml(loc.address_nl || "")}</div>` : ""}
+      ${loc ? `<div class="text-ink-500 text-sm">${escapeHtml(locText(loc, "address") || loc.address_nl || "")}</div>` : ""}
       <div class="flex gap-2 mt-2">
         ${loc ? `<button class="h-12 px-4 rounded-xl bg-trust-100 text-trust-700 font-semibold" data-action="show-chinese" data-slug="${loc.slug}">🚕 ${t("loc_show_chinese")}</button>` : ""}
         <button class="h-12 px-4 rounded-xl btn-primary font-semibold" data-nav="today">${t("home_view_day")}</button>
@@ -186,8 +205,8 @@ async function renderWeather() {
     document.getElementById("home-weather").innerHTML =
       `<div class="flex items-center gap-3"><span class="text-4xl" aria-hidden="true">${emoji}</span>
         <div>
-          <div class="font-semibold">${Math.round(cur.temperature_2m)}°C nu · ${city === "xian" ? "Xi'an" : "Beijing"}</div>
-          <div class="text-ink-500 text-sm">Vandaag ${Math.round(today.temperature_2m_min[0])}° – ${Math.round(today.temperature_2m_max[0])}° · wind ${Math.round(cur.wind_speed_10m)} km/u</div>
+          <div class="font-semibold">${Math.round(cur.temperature_2m)}°C · ${cityLabel(city === "both" ? "beijing" : city)}</div>
+          <div class="text-ink-500 text-sm">${Math.round(today.temperature_2m_min[0])}° – ${Math.round(today.temperature_2m_max[0])}° · wind ${Math.round(cur.wind_speed_10m)} km/u</div>
         </div>
       </div>`;
   } catch (e) {
@@ -223,14 +242,12 @@ function renderToday() {
     locations: state.locations,
     t, lang: state.lang,
     onReorder: async (newOrder) => {
-      // apply optimistic order via "start_time" heuristic: spread from 09:00
-      const base = 9 * 60;
       newOrder.forEach(async (id, i) => {
         const it = state.items.find((x) => x.id === id);
         if (!it) return;
-        const t = new Date(0, 0, 0, 9 + Math.floor(i * 1.5), (i % 2) * 30);
-        const hh = String(t.getHours()).padStart(2, "0");
-        const mm = String(t.getMinutes()).padStart(2, "0");
+        const tm = new Date(0, 0, 0, 9 + Math.floor(i * 1.5), (i % 2) * 30);
+        const hh = String(tm.getHours()).padStart(2, "0");
+        const mm = String(tm.getMinutes()).padStart(2, "0");
         it.start_time = `${hh}:${mm}`;
         await state.sync.update(it);
       });
@@ -254,9 +271,8 @@ function renderToday() {
     onOpenLoc: (slug) => openLocModal(slug),
   });
 
-  // diary
-  const d = state.diary.find((x) => x.day === state.selectedDay);
-  document.getElementById("diary-text").value = d?.text || "";
+  const dy = state.diary.find((x) => x.day === state.selectedDay);
+  document.getElementById("diary-text").value = dy?.text || "";
 }
 
 function sortItems(a, b) {
@@ -269,9 +285,9 @@ function short(iso) {
   return d.toLocaleDateString(state.lang === "zh" ? "zh-CN" : (state.lang === "es" ? "es-ES" : "nl-NL"),
     { weekday: "short", day: "numeric", month: "short" });
 }
-function fmtTime(t) { return t ? t.slice(0, 5) : "—"; }
+function fmtTime(tm) { return tm ? tm.slice(0, 5) : "—"; }
 function titleOf(it, loc) {
-  return it.custom_title || loc?.[`name_${state.lang}`] || loc?.name_nl || "—";
+  return it.custom_title || locText(loc, "name") || loc?.name_nl || "—";
 }
 
 // ------------------------- EXPLORE -------------------------
@@ -314,13 +330,16 @@ function renderExplore() {
       if (!(l.tags || []).includes(tg) && !(tg === "gratis" && (l.price_adult_cny === 0))) return false;
     }
     if (q) {
-      const hay = [l.name_nl, l.name_es, l.name_zh, l.pinyin, l.description_nl, (l.tags || []).join(" ")].join(" ").toLowerCase();
+      const hay = [l.name_nl, l.name_es, l.name_zh, l.pinyin, l.description_nl, l.tagline_nl, (l.tags || []).join(" ")].join(" ").toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
   });
   document.getElementById("explore-count").textContent = t("explore_count", { n: matches.length });
   list.innerHTML = matches.length ? matches.map(cardHtml).join("") : `<li class="text-ink-500 py-10 text-center">${t("explore_no_results")}</li>`;
+
+  // Cache current filtered list for modal paging
+  state.currentMatches = matches;
 }
 
 function toggleFilter(kind, v) {
@@ -334,49 +353,118 @@ function toggleFilter(kind, v) {
 }
 
 function labelFor(v, kind) {
-  const catLabels = { museum: "🏛️ Musea", monument: "🏯 Monumenten", tempel: "⛩️ Tempels",
-    restaurant: "🍜 Eten", shopping: "🛍️ Shoppen", park: "🌳 Parken", "lokale-ervaring": "🧧 Lokale ervaring",
-    "hutong/buurt": "🏘️ Hutong", markt: "🎪 Markt", viewpoint: "🏞️ Uitzicht", show: "🎭 Show",
-    avond: "🌃 Avond", "hidden-gem": "💎 Pareltje", fotospot: "📸 Foto", "kunst-cultuur": "🎨 Kunst",
-    "historisch-site": "🏛️ Historisch" };
-  const tagLabels = { unesco: "UNESCO", "must-see": "Must-see", "senior-vriendelijk": "Senior 70+",
-    gratis: "Gratis", kindvriendelijk: "Kindvriendelijk", regenbestendig: "Regenbestendig" };
-  const cityLabels = { xian: "Xi'an", beijing: "Beijing" };
-  if (kind === "category") return catLabels[v] || v;
-  if (kind === "tag") return tagLabels[v] || v;
-  if (kind === "city") return cityLabels[v] || v;
+  if (kind === "category") return t(`cat_${v}`) || v;
+  if (kind === "tag")      return t(`tag_${v}`) || v;
+  if (kind === "city")     return t(`city_${v}`) || v;
   return v;
 }
 
+function cityLabel(c) { return t(`city_${c}`) || c; }
+
+// ------------------------- Star rating -------------------------
+function starRating(value, max = 5) {
+  const v = Number(value) || 0;
+  const stars = [];
+  for (let i = 0; i < max; i++) {
+    const delta = v - i;
+    let fill = 0;
+    if (delta >= 0.75) fill = 100;
+    else if (delta >= 0.25) fill = 50;
+    else fill = 0;
+    stars.push(`<span class="star" style="--fill:${fill}%"></span>`);
+  }
+  const label = v.toFixed(1).replace(".", state.lang === "nl" || state.lang === "es" ? "," : ".");
+  return `<div class="star-rating" role="img" aria-label="${t("loc_rating_label", { value: label })}">${stars.join("")}</div>`;
+}
+
+// ------------------------- Distance helper -------------------------
+function distanceFromHotel(l) {
+  if (!l || l.lat == null || l.lng == null) return null;
+  const hotelCity = l.city === "xian" ? "xian" : "beijing";
+  const hotel = CFG.HOTELS?.[hotelCity];
+  if (!hotel) return null;
+  const R = 6371;
+  const toRad = (d) => d * Math.PI / 180;
+  const dLat = toRad(l.lat - hotel.lat);
+  const dLon = toRad(l.lng - hotel.lng);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(hotel.lat)) * Math.cos(toRad(l.lat)) * Math.sin(dLon/2)**2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const km = R * c;
+  return km < 10 ? km.toFixed(1) : Math.round(km);
+}
+
+// ------------------------- Placeholder images per category -------------------------
+function placeholderFor(category) {
+  const map = {
+    museum:    "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=800&q=70",
+    monument:  "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=70",
+    tempel:    "https://images.unsplash.com/photo-1545893835-abaa50cbe628?w=800&q=70",
+    restaurant:"https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=800&q=70",
+    shopping:  "https://images.unsplash.com/photo-1513708927688-890fe41c2e99?w=800&q=70",
+    park:      "https://images.unsplash.com/photo-1519974719765-e6559eac2575?w=800&q=70",
+    markt:     "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&q=70",
+    viewpoint: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=70",
+    show:      "https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&q=70",
+    avond:     "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=70",
+    "hidden-gem":  "https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=800&q=70",
+    fotospot:  "https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&q=70",
+    "kunst-cultuur": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=70",
+    "historisch-site": "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=70",
+    "lokale-ervaring": "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=70",
+    "hutong/buurt": "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=70",
+  };
+  return map[category] || "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=70";
+}
+
+// ------------------------- EXPLORE CARDS -------------------------
 function cardHtml(l) {
   const inPlan = state.items.some((i) => i.location_slug === l.slug);
   const closedToday = closedToday_(l);
   const priceAdult = l.price_adult_cny === 0 ? t("loc_free") : `¥${l.price_adult_cny ?? "?"}`;
-  const priceSenior = l.price_senior_cny === 0 ? t("loc_free") : (l.price_senior_cny != null ? `¥${l.price_senior_cny}` : "—");
-  const tags = (l.tags || []).slice(0, 3).map((x) => `<span class="inline-block px-2 py-0.5 rounded-full bg-line/50 text-sm">${escapeHtml(x)}</span>`).join(" ");
+  const rating = Number(l.rating) || 0;
+  const reviews = Number(l.review_count) || 0;
+  const distKm = distanceFromHotel(l);
+  const tagline = locText(l, "tagline");
+  const photo = l.photo_url || placeholderFor(l.category);
+  const name = locText(l, "name") || l.name_nl || "";
+  const cityL = cityLabel(l.city);
+  const catL = labelFor(l.category, "category");
+
   return `
-  <li class="bg-bg-card rounded-2xl border ${inPlan ? "border-success-700 border-2" : "border-line"} p-4 focus-ring"
+  <li class="bg-bg-card rounded-2xl overflow-hidden border ${inPlan ? "border-success-700 border-2" : "border-line"} shadow-sm focus-within:ring-2 focus-within:ring-brand-600"
       data-slug="${l.slug}">
-    <button class="w-full text-left" data-action="open-loc" data-slug="${l.slug}">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <div class="text-[22px] font-semibold leading-tight">${escapeHtml(l[`name_${state.lang}`] || l.name_nl)}</div>
-          <div class="text-ink-500 text-base">${escapeHtml(l.name_zh || "")} · <i>${escapeHtml(l.pinyin || "")}</i></div>
-          <div class="mt-1 text-sm">${escapeHtml(cityLabel(l.city))} · ${escapeHtml(catLabelShort(l.category))}</div>
+    <button class="w-full text-left block focus:outline-none" data-action="open-loc" data-slug="${l.slug}" aria-label="${escapeAttr(name)}">
+      <div class="relative aspect-[16/9] bg-line/40 skeleton-shimmer overflow-hidden">
+        <img src="${escapeAttr(photo)}" alt="" loading="lazy" decoding="async"
+             class="w-full h-full object-cover opacity-0 transition-opacity duration-300"
+             onload="this.style.opacity=1; this.parentElement.classList.remove('skeleton-shimmer');"
+             onerror="this.onerror=null; this.src='${escapeAttr(placeholderFor(l.category))}';" />
+        <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/95 text-ink-900 text-sm font-semibold shadow-sm">${escapeHtml(catL)}</span>
+        ${inPlan ? `<span class="absolute top-3 right-3 h-9 w-9 rounded-full bg-success-700 text-white flex items-center justify-center font-bold shadow">✓</span>` : ""}
+        ${distKm != null ? `<span class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-black/70 text-white text-sm font-semibold">📍 ${t("explore_distance_from_hotel", { n: distKm })}</span>` : ""}
+        ${closedToday ? `<span class="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-danger-100 text-danger-700 text-sm font-semibold shadow-sm">${t("loc_closed_today")}</span>` : ""}
+      </div>
+      <div class="p-4">
+        <h3 class="text-[22px] font-bold leading-tight">${escapeHtml(name)}</h3>
+        <div class="text-ink-500 text-[15px] mt-0.5">
+          ${escapeHtml(l.name_zh || "")}${l.pinyin ? ` · <i>${escapeHtml(l.pinyin)}</i>` : ""}
         </div>
-        ${inPlan ? `<span class="text-success-700 font-semibold text-sm whitespace-nowrap">✓ ${t("loc_in_plan")}</span>` : ""}
+        ${tagline ? `<p class="text-[16px] text-ink-700 mt-2 leading-snug">${escapeHtml(tagline)}</p>` : ""}
+        ${rating ? `
+        <div class="mt-3 flex items-center gap-2 flex-wrap">
+          ${starRating(rating)}
+          <span class="text-[15px] font-semibold text-ink-900">${rating.toFixed(1).replace(".", state.lang === "zh" ? "." : ",")}</span>
+          ${reviews ? `<span class="text-[13px] text-ink-500">${t("loc_rating_reviews", { n: reviews.toLocaleString() })}</span>` : ""}
+        </div>` : ""}
+        <div class="mt-3 flex flex-wrap gap-2 text-[14px]">
+          <span class="px-2.5 py-1 rounded-lg bg-line/50 font-semibold">💴 ${priceAdult}</span>
+          <span class="px-2.5 py-1 rounded-lg bg-line/50 font-semibold">⏱️ ${t("loc_duration", { n: l.duration_min || "?" })}</span>
+          <span class="px-2.5 py-1 rounded-lg bg-line/50 font-semibold">${escapeHtml(cityL)}</span>
+        </div>
       </div>
-      ${closedToday ? `<div class="mt-2 inline-block px-2 py-1 rounded bg-warn-100 text-warn-700 text-sm">${t("loc_closed_today")}</div>` : ""}
-      <div class="mt-2 text-[16px] text-ink-700">
-        💴 ${priceAdult} · 60+ ${priceSenior} · ⏱️ ${t("loc_duration", { n: l.duration_min || "?" })}
-      </div>
-      ${tags ? `<div class="mt-2 flex gap-1 flex-wrap">${tags}</div>` : ""}
     </button>
   </li>`;
 }
-
-function cityLabel(c) { return c === "xian" ? "Xi'an" : c === "beijing" ? "Beijing" : c; }
-function catLabelShort(c) { return labelFor(c, "category"); }
 
 function closedToday_(l) {
   if (!l.closed_days || !l.closed_days.length) return false;
@@ -384,60 +472,262 @@ function closedToday_(l) {
   return l.closed_days.includes(day);
 }
 
-// ------------------------- Location modal -------------------------
-function openLocModal(slug) {
-  const l = state.locations.find((x) => x.slug === slug);
+// ------------------------- Location modal (hero + swipe + language-aware) -------------------------
+function openLocModal(slug, list) {
+  // Default list: current filtered Explore matches, or all locations
+  const activeList = list || state.currentMatches || state.locations;
+  const idx = activeList.findIndex((x) => x.slug === slug);
+  if (idx < 0) return;
+  state.modalList = activeList;
+  state.modalIndex = idx;
+  renderModalContent();
+  const modal = document.getElementById("loc-modal");
+  modal.classList.remove("hidden");
+  // Attach swipe once
+  if (!modal.__swipeAttached) {
+    const swipeEl = document.getElementById("loc-modal-swipe");
+    attachSwipe(swipeEl, {
+      threshold: 80,
+      onMove: (dx, progress) => {
+        swipeEl.style.transition = "none";
+        swipeEl.style.transform = `translateX(${dx}px)`;
+        swipeEl.style.opacity = String(1 - progress * 0.25);
+      },
+      onSwipeLeft: () => pageModal(+1),
+      onSwipeRight: () => pageModal(-1),
+      onCancel: () => {
+        swipeEl.style.transition = "transform .22s ease-out, opacity .22s";
+        swipeEl.style.transform = "translateX(0)";
+        swipeEl.style.opacity = "1";
+      },
+    });
+    modal.__swipeAttached = true;
+  }
+}
+function closeLocModal() {
+  const modal = document.getElementById("loc-modal");
+  modal.classList.add("hidden");
+  const swipeEl = document.getElementById("loc-modal-swipe");
+  if (swipeEl) {
+    swipeEl.style.transition = "none";
+    swipeEl.style.transform = "translateX(0)";
+    swipeEl.style.opacity = "1";
+  }
+}
+function pageModal(delta) {
+  const list = state.modalList;
+  if (!list || list.length === 0) return;
+  const n = (state.modalIndex + delta + list.length) % list.length;
+  const swipeEl = document.getElementById("loc-modal-swipe");
+  const dir = delta > 0 ? -1 : 1;
+  swipeEl.style.transition = "transform .22s ease-in, opacity .22s";
+  swipeEl.style.transform = `translateX(${dir * -100}%)`;
+  swipeEl.style.opacity = "0";
+  setTimeout(() => {
+    state.modalIndex = n;
+    swipeEl.style.transition = "none";
+    swipeEl.style.transform = `translateX(${dir * 100}%)`;
+    renderModalContent();
+    requestAnimationFrame(() => {
+      swipeEl.style.transition = "transform .25s ease-out, opacity .25s";
+      swipeEl.style.transform = "translateX(0)";
+      swipeEl.style.opacity = "1";
+      // Reset scroll to top of content
+      document.getElementById("loc-modal-scroll")?.scrollTo({ top: 0 });
+    });
+  }, 220);
+}
+
+function renderModalContent() {
+  const list = state.modalList;
+  const l = list[state.modalIndex];
   if (!l) return;
   const body = document.getElementById("loc-modal-body");
-  const tips = (l.tips_nl || []).map((x) => `<li class="text-[16px] text-ink-700 leading-relaxed">${escapeHtml(x)}</li>`).join("");
-  const warn = (l.warnings_nl || []).map((x) => `<li class="text-[16px] text-warn-700 leading-relaxed">${escapeHtml(x)}</li>`).join("");
-  const sources = (l.source_urls || []).slice(0, 3).map((u) => `<a class="text-trust-700 underline break-all text-sm" href="${u}" target="_blank" rel="noreferrer">${escapeHtml(shortUrl(u))}</a>`).join(" · ");
+  const name = locText(l, "name") || l.name_nl || "";
+  const tagline = locText(l, "tagline");
+  const description = locText(l, "description");
+  const tips = locList(l, "tips");
+  const warnings = locList(l, "warnings");
+  const addressNl = locText(l, "address");
+  const addressZh = l.address_zh || "";
+  const photo = l.photo_url || placeholderFor(l.category);
   const inPlan = state.items.some((i) => i.location_slug === l.slug);
   const priceAdult = l.price_adult_cny === 0 ? t("loc_free") : `¥${l.price_adult_cny ?? "?"}`;
   const priceSenior = l.price_senior_cny === 0 ? t("loc_free") : (l.price_senior_cny != null ? `¥${l.price_senior_cny}` : "—");
+  const rating = Number(l.rating) || 0;
+  const reviews = Number(l.review_count) || 0;
+  const distKm = distanceFromHotel(l);
+  const durStr = l.duration_min >= 120 ? t("loc_duration_hours", { h: Math.round(l.duration_min / 60) }) : t("loc_duration", { n: l.duration_min || "?" });
+  const openHours = typeof l.opening_hours === "string" ? l.opening_hours : "";
+  const pager = t("loc_pager", { cur: state.modalIndex + 1, total: list.length });
+
+  const tagsHtml = (l.tags || []).map((x) => {
+    const tl = labelFor(x, "tag") || x;
+    return `<span class="px-2 py-1 rounded-full bg-line/50 text-sm">${escapeHtml(tl)}</span>`;
+  }).join(" ");
+
+  // Shopping-specific panels
+  const shopsInside = Array.isArray(l.shops_inside) ? l.shops_inside : null;
+  const floorGuide = l.floor_guide_nl; // only NL for now
+  const shoppingTips = l.shopping_tips_nl;
+  const bestFor = l.best_for_nl;
+
+  const tipsHtml = tips.length ? `
+    <section>
+      <h3 class="text-[18px] font-bold mt-4 mb-2">${t("loc_tips")}</h3>
+      <ul class="space-y-2 pl-5 list-disc text-[17px] leading-relaxed">
+        ${tips.map((x) => `<li class="text-ink-700">${escapeHtml(x)}</li>`).join("")}
+      </ul>
+    </section>` : "";
+
+  const warnHtml = warnings.length ? `
+    <section>
+      <h3 class="text-[18px] font-bold mt-4 mb-2 text-warn-700">${t("loc_warnings")}</h3>
+      <ul class="space-y-2 pl-5 list-disc text-[17px] leading-relaxed">
+        ${warnings.map((x) => `<li class="text-warn-700">${escapeHtml(x)}</li>`).join("")}
+      </ul>
+    </section>` : "";
+
+  const shopsHtml = shopsInside ? `
+    <section>
+      <h3 class="text-[18px] font-bold mt-4 mb-2">🛍️ ${t("loc_shops_inside")}</h3>
+      <ul class="space-y-2">
+        ${shopsInside.slice(0, 20).map((s) => `
+          <li class="p-3 rounded-xl bg-line/30">
+            <div class="font-semibold text-[16px]">${escapeHtml(s.name || "")}</div>
+            ${s.type ? `<div class="text-ink-500 text-sm">${escapeHtml(s.type)}</div>` : ""}
+            ${s.note ? `<div class="text-ink-700 text-[15px] mt-1">${escapeHtml(s.note)}</div>` : ""}
+          </li>`).join("")}
+      </ul>
+    </section>` : "";
+
+  const floorHtml = floorGuide ? `
+    <section>
+      <h3 class="text-[18px] font-bold mt-4 mb-2">🗺️ ${t("loc_floor_guide")}</h3>
+      <div class="p-3 rounded-xl bg-line/30 text-[15px] leading-relaxed whitespace-pre-wrap">${escapeHtml(floorGuide)}</div>
+    </section>` : "";
+
+  const shoppingTipsHtml = (Array.isArray(shoppingTips) && shoppingTips.length) ? `
+    <section>
+      <h3 class="text-[18px] font-bold mt-4 mb-2">💡 ${t("loc_shopping_tips")}</h3>
+      <ul class="space-y-2 pl-5 list-disc text-[17px] leading-relaxed">
+        ${shoppingTips.map((x) => `<li class="text-ink-700">${escapeHtml(x)}</li>`).join("")}
+      </ul>
+    </section>` : "";
+
+  const bestForHtml = bestFor ? `
+    <section>
+      <h3 class="text-[18px] font-bold mt-4 mb-2">⭐ ${t("loc_best_for")}</h3>
+      <div class="text-[17px] text-ink-700">${escapeHtml(bestFor)}</div>
+    </section>` : "";
+
+  const sources = (l.source_urls || []).slice(0, 3).map((u) => `<a class="text-trust-700 underline break-all text-sm" href="${escapeAttr(u)}" target="_blank" rel="noreferrer">${escapeHtml(shortUrl(u))}</a>`).join(" · ");
+
   body.innerHTML = `
-    <h2 id="loc-modal-title" class="text-[28px] font-bold leading-tight">${escapeHtml(l[`name_${state.lang}`] || l.name_nl)}</h2>
-    <div class="text-[22px] font-semibold text-ink-700">${escapeHtml(l.name_zh || "")}</div>
-    <div class="text-[16px] italic text-ink-500">${escapeHtml(l.pinyin || "")}</div>
-    <div class="mt-3 flex gap-2 flex-wrap">
-      ${(l.tags || []).map((x) => `<span class="px-2 py-1 rounded-full bg-line/50 text-sm">${escapeHtml(x)}</span>`).join("")}
-    </div>
-    ${closedToday_(l) ? `<div class="mt-3 p-3 rounded-xl bg-warn-100 text-warn-700 font-semibold">${t("loc_closed_today")}</div>` : ""}
-    ${l.seasonal_notes ? `<div class="mt-3 p-3 rounded-xl bg-accent-500/20 text-accent-800 text-[16px]">⚠ ${escapeHtml(l.seasonal_notes)}</div>` : ""}
+    <!-- HERO -->
+    <div class="relative aspect-[16/9] bg-line flex-shrink-0 skeleton-shimmer">
+      <img src="${escapeAttr(photo)}" alt="" class="w-full h-full object-cover opacity-0 transition-opacity duration-300"
+           onload="this.style.opacity=1; this.parentElement.classList.remove('skeleton-shimmer');"
+           onerror="this.onerror=null; this.src='${escapeAttr(placeholderFor(l.category))}';" />
+      <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30 pointer-events-none"></div>
 
-    <div class="mt-4 grid grid-cols-2 gap-3 text-[16px]">
-      <div><div class="text-ink-500 text-sm">${t("loc_price_adult")}</div><div class="font-semibold">${priceAdult}</div></div>
-      <div><div class="text-ink-500 text-sm">${t("loc_price_senior")}</div><div class="font-semibold">${priceSenior}</div></div>
-      <div><div class="text-ink-500 text-sm">⏱️</div><div class="font-semibold">${t("loc_duration", { n: l.duration_min || "?" })}</div></div>
-      <div><div class="text-ink-500 text-sm">⏰</div><div class="font-semibold text-sm">${escapeHtml(typeof l.opening_hours === "string" ? l.opening_hours : JSON.stringify(l.opening_hours || "?"))}</div></div>
-    </div>
+      <button id="loc-modal-close-inner" class="absolute top-3 left-3 h-12 w-12 rounded-full bg-black/60 text-white text-2xl backdrop-blur focus-ring" aria-label="✕">✕</button>
 
-    <div class="mt-4">
-      <div class="text-ink-500 text-sm">${t("loc_address")}</div>
-      <div class="mt-1 p-4 rounded-2xl bg-white border-2 border-brand-600 text-[28px] font-semibold leading-snug text-center" lang="zh-CN">${escapeHtml(l.address_zh || l.address_nl || "—")}</div>
-      <div class="text-ink-500 text-sm mt-1">${escapeHtml(l.address_nl || "")}</div>
-      <button class="mt-2 h-11 px-4 rounded-xl bg-trust-100 text-trust-700 font-semibold focus-ring" data-action="speak-zh" data-text="${escapeAttr(l.address_zh || "")}">🔊 ${t("loc_show_chinese")}</button>
+      <!-- prev / next arrows -->
+      ${list.length > 1 ? `
+      <button data-modal-prev class="absolute top-1/2 -translate-y-1/2 left-3 h-12 w-12 rounded-full bg-black/60 text-white text-2xl backdrop-blur focus-ring flex items-center justify-center" aria-label="${t("loc_prev")}">‹</button>
+      <button data-modal-next class="absolute top-1/2 -translate-y-1/2 right-3 h-12 w-12 rounded-full bg-black/60 text-white text-2xl backdrop-blur focus-ring flex items-center justify-center" aria-label="${t("loc_next")}">›</button>
+      <div class="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-white text-sm font-semibold">${escapeHtml(pager)}</div>
+      ` : ""}
+
+      <span class="absolute top-3 right-3 px-3 py-1 rounded-full bg-white/95 text-ink-900 text-sm font-semibold shadow-sm">${escapeHtml(labelFor(l.category, "category"))}</span>
     </div>
 
-    ${l.description_nl ? `<p class="mt-4 text-[18px] leading-relaxed">${escapeHtml(state.lang === "es" && l.description_es ? l.description_es : l.description_nl)}</p>` : ""}
+    <!-- SCROLLING BODY -->
+    <div id="loc-modal-scroll" class="flex-1 overflow-y-auto">
+      <div class="p-5 space-y-4">
+        <header>
+          <h1 id="loc-modal-title" class="text-[26px] font-bold leading-tight">${escapeHtml(name)}</h1>
+          <p class="text-[20px] font-semibold text-ink-700" lang="zh-CN">${escapeHtml(l.name_zh || "")}</p>
+          ${l.pinyin ? `<p class="text-[15px] italic text-ink-500">${escapeHtml(l.pinyin)}</p>` : ""}
+          ${rating ? `
+          <div class="mt-2 flex items-center gap-2 flex-wrap">
+            ${starRating(rating)}
+            <span class="text-[16px] font-semibold text-ink-900">${rating.toFixed(1).replace(".", state.lang === "zh" ? "." : ",")}</span>
+            ${reviews ? `<span class="text-[14px] text-ink-500">${t("loc_rating_reviews", { n: reviews.toLocaleString() })}</span>` : ""}
+          </div>` : ""}
+          ${tagline ? `<p class="mt-3 text-[18px] text-ink-700 leading-snug">${escapeHtml(tagline)}</p>` : ""}
+          ${tagsHtml ? `<div class="mt-3 flex gap-2 flex-wrap">${tagsHtml}</div>` : ""}
+          ${closedToday_(l) ? `<div class="mt-3 p-3 rounded-xl bg-warn-100 text-warn-700 font-semibold">${t("loc_closed_today")}</div>` : ""}
+          ${l.seasonal_notes_es && state.lang === "es" ? `<div class="mt-3 p-3 rounded-xl bg-accent-500/20 text-accent-800 text-[16px]">⚠ ${escapeHtml(l.seasonal_notes_es)}</div>` : (l.seasonal_notes ? `<div class="mt-3 p-3 rounded-xl bg-accent-500/20 text-accent-800 text-[16px]">⚠ ${escapeHtml(l.seasonal_notes)}</div>` : "")}
+        </header>
 
-    ${tips ? `<h3 class="mt-4 font-semibold text-[18px]">${t("loc_tips")}</h3><ul class="list-disc pl-5 space-y-1">${tips}</ul>` : ""}
-    ${warn ? `<h3 class="mt-4 font-semibold text-[18px] text-warn-700">${t("loc_warnings")}</h3><ul class="list-disc pl-5 space-y-1">${warn}</ul>` : ""}
+        <!-- INFO GRID -->
+        <dl class="grid grid-cols-2 gap-2">
+          <div class="rounded-2xl bg-line/30 p-3">
+            <dt class="text-xs text-ink-500 font-semibold uppercase tracking-wide">${t("loc_access")}</dt>
+            <dd class="text-[18px] font-bold mt-0.5">💴 ${priceAdult}</dd>
+            <dd class="text-sm text-ink-500">60+ · ${priceSenior}</dd>
+          </div>
+          <div class="rounded-2xl bg-line/30 p-3">
+            <dt class="text-xs text-ink-500 font-semibold uppercase tracking-wide">${t("loc_duration_label")}</dt>
+            <dd class="text-[18px] font-bold mt-0.5">⏱ ${durStr}</dd>
+          </div>
+          <div class="rounded-2xl bg-line/30 p-3">
+            <dt class="text-xs text-ink-500 font-semibold uppercase tracking-wide">${t("loc_opening_label")}</dt>
+            <dd class="text-[16px] font-bold mt-0.5 break-words">⏰ ${escapeHtml(openHours || "—")}</dd>
+          </div>
+          <div class="rounded-2xl bg-line/30 p-3">
+            <dt class="text-xs text-ink-500 font-semibold uppercase tracking-wide">${t("loc_distance_label")}</dt>
+            <dd class="text-[18px] font-bold mt-0.5">📍 ${distKm != null ? distKm + " km" : "—"}</dd>
+            <dd class="text-sm text-ink-500">${t("loc_from_hotel")}</dd>
+          </div>
+        </dl>
 
-    <div class="mt-5 flex gap-2">
-      <button class="flex-1 h-14 rounded-2xl btn-primary font-semibold text-xl focus-ring active:scale-[0.98]" data-action="add-to-plan" data-slug="${l.slug}" ${inPlan ? "disabled" : ""}>
+        <!-- CHINESE ADDRESS -->
+        ${addressZh || addressNl ? `
+        <section>
+          <h3 class="text-xs text-ink-500 font-semibold uppercase tracking-wide">${t("loc_show_chinese")}</h3>
+          ${addressZh ? `<div class="mt-1 p-4 rounded-2xl bg-white border-2 border-brand-600 text-[24px] font-semibold text-center leading-snug" lang="zh-CN">${escapeHtml(addressZh)}</div>` : ""}
+          ${addressNl ? `<p class="text-sm text-ink-500 mt-1">${escapeHtml(addressNl)}</p>` : ""}
+          ${addressZh ? `<button class="mt-2 h-11 px-4 rounded-xl bg-trust-100 text-trust-700 font-semibold focus-ring" data-action="speak-zh" data-text="${escapeAttr(addressZh)}">🔊 ${t("loc_show_chinese")}</button>` : ""}
+        </section>` : ""}
+
+        ${description ? `<section><p class="text-[17px] leading-relaxed text-ink-900">${escapeHtml(description)}</p></section>` : ""}
+
+        ${tipsHtml}
+        ${warnHtml}
+        ${bestForHtml}
+        ${shopsHtml}
+        ${floorHtml}
+        ${shoppingTipsHtml}
+
+        ${sources ? `<div class="mt-3 text-sm">${t("loc_source")}: ${sources}</div>` : ""}
+
+        <!-- Hint: swipe to next -->
+        ${list.length > 1 ? `<div class="text-center text-ink-500 text-sm py-3">${t("loc_swipe_hint")}</div>` : ""}
+
+        <div class="h-6"></div>
+      </div>
+    </div>
+
+    <!-- STICKY ACTION BAR -->
+    <footer class="flex-shrink-0 bg-bg-card border-t border-line p-3 flex gap-2" style="padding-bottom: calc(12px + env(safe-area-inset-bottom));">
+      <button class="flex-1 h-14 rounded-2xl btn-primary font-bold text-[17px] focus-ring active:scale-[0.98]"
+              data-action="add-to-plan" data-slug="${l.slug}" ${inPlan ? "disabled" : ""}>
         ${inPlan ? `✓ ${t("loc_in_plan")}` : `+ ${t("loc_add_to_plan")}`}
       </button>
-      <a class="h-14 flex items-center justify-center px-5 rounded-2xl bg-trust-100 text-trust-700 font-semibold focus-ring"
+      <a class="h-14 w-14 rounded-2xl bg-trust-100 text-trust-700 text-2xl flex items-center justify-center focus-ring"
          href="https://www.openstreetmap.org/?mlat=${l.lat}&mlon=${l.lng}#map=17/${l.lat}/${l.lng}"
-         target="_blank" rel="noreferrer">🗺️</a>
-    </div>
-
-    ${sources ? `<div class="mt-3 text-sm">${t("loc_source")}: ${sources}</div>` : ""}
+         target="_blank" rel="noreferrer" aria-label="${t("loc_open_map")}">🗺️</a>
+    </footer>
   `;
-  document.getElementById("loc-modal").classList.remove("hidden");
+  // Wire inner close + prev/next
+  document.getElementById("loc-modal-close-inner")?.addEventListener("click", closeLocModal);
+  body.querySelector("[data-modal-prev]")?.addEventListener("click", (e) => { e.stopPropagation(); pageModal(-1); });
+  body.querySelector("[data-modal-next]")?.addEventListener("click", (e) => { e.stopPropagation(); pageModal(+1); });
 }
-function closeLocModal() { document.getElementById("loc-modal").classList.add("hidden"); }
+
 function shortUrl(u) { try { return new URL(u).host; } catch { return u; } }
 
 // ------------------------- Add-to-plan modal -------------------------
@@ -445,11 +735,12 @@ function openAddModal(slug) {
   const l = state.locations.find((x) => x.slug === slug);
   if (!l) return;
   const body = document.getElementById("add-modal-body");
+  const name = locText(l, "name") || l.name_nl;
   body.innerHTML = `
-    <div class="text-[22px] font-semibold mb-2">${escapeHtml(l[`name_${state.lang}`] || l.name_nl)}</div>
+    <div class="text-[22px] font-semibold mb-2">${escapeHtml(name)}</div>
     <label class="block text-sm text-ink-500 mb-1">${t("add_modal_choose_day")}</label>
     <select id="add-day" class="w-full h-12 rounded-xl border border-line bg-white text-[18px] focus-ring mb-3">
-      ${CFG.DAYS.map((d) => `<option value="${d.date}" ${d.date === state.selectedDay ? "selected" : ""}>${short(d.date)} — ${escapeHtml(d.label_nl)}</option>`).join("")}
+      ${CFG.DAYS.map((d) => `<option value="${d.date}" ${d.date === state.selectedDay ? "selected" : ""}>${short(d.date)} — ${escapeHtml(d["label_" + state.lang] || d.label_nl)}</option>`).join("")}
     </select>
     <label class="block text-sm text-ink-500 mb-1">${t("add_modal_time")}</label>
     <input id="add-time" type="time" class="w-full h-12 rounded-xl border border-line bg-white text-[18px] focus-ring mb-3" />
@@ -471,7 +762,7 @@ function openAddModal(slug) {
       day, start_time: time || null, end_time: null,
       location_slug: slug, custom_title: null,
       notes: notes || null, status: "planned",
-      added_by: who || "Onbekend", created_at: new Date().toISOString(),
+      added_by: who || "—", created_at: new Date().toISOString(),
     };
     state.items.push(item);
     await state.sync.add(item);
@@ -522,7 +813,7 @@ function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&
 function escapeAttr(s) { return escapeHtml(s); }
 function speakZh(text) {
   if (!text) return;
-  if (!("speechSynthesis" in window)) { alert("Stem niet beschikbaar op dit apparaat."); return; }
+  if (!("speechSynthesis" in window)) { alert("—"); return; }
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "zh-CN"; u.rate = 0.9;
   const vs = speechSynthesis.getVoices().filter((v) => v.lang.startsWith("zh"));
@@ -566,7 +857,11 @@ document.addEventListener("click", (e) => {
     window.__mapSwitchCity?.(mapBtn.getAttribute("data-city"));
   }
 });
-document.getElementById("loc-modal-close").onclick = closeLocModal;
+document.getElementById("loc-modal-close")?.addEventListener("click", closeLocModal);
+document.getElementById("loc-modal")?.addEventListener("click", (e) => {
+  // close when clicking outside the swipe container
+  if (e.target.id === "loc-modal") closeLocModal();
+});
 document.getElementById("btn-home-logo").onclick = () => go("home");
 document.getElementById("explore-search").addEventListener("input", (e) => {
   state.exploreFilters.search = e.target.value;
@@ -578,7 +873,6 @@ document.getElementById("lang-select").onchange = async (e) => {
   localStorage.setItem("lang", state.lang);
   state.i18n = await loadLocale(state.lang);
   applyI18n();
-  // re-render current screen so dynamic labels update
   go(state.currentScreen);
 };
 document.getElementById("diary-save").onclick = async () => {
@@ -589,19 +883,10 @@ document.getElementById("diary-save").onclick = async () => {
   await state.sync.upsertDiary(state.diary.find((x) => x.day === state.selectedDay));
   toast(t("today_diary_saved"));
 };
-document.getElementById("login-btn").onclick = () => {
-  const v = document.getElementById("trip-code-input").value.trim().toLowerCase();
-  if (v === CFG.TRIP_CODE) {
-    localStorage.setItem("trip_code", CFG.TRIP_CODE);
-    state.loggedIn = true;
-    document.getElementById("login-gate").classList.add("hidden");
-    go("home");
-  } else {
-    toast(t("login_wrong"));
-  }
-};
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape") { closeLocModal(); closeAddModal(); }
+  if (e.key === "ArrowLeft" && !document.getElementById("loc-modal").classList.contains("hidden")) pageModal(-1);
+  if (e.key === "ArrowRight" && !document.getElementById("loc-modal").classList.contains("hidden")) pageModal(+1);
 });
 
 // ------------------------- Boot -------------------------
@@ -615,22 +900,17 @@ window.addEventListener("keydown", (e) => {
   const td = currentTripDay();
   state.selectedDay = td.phase === "during" ? td.iso : CFG.TRIP_START;
 
-  // sync client
   state.sync = new SyncClient(CFG, state);
   await state.sync.init();
 
-  // login gate permanent uit — we loggen iedereen automatisch in
+  // login gate permanent uit
   document.getElementById("login-gate")?.classList.add("hidden");
 
-  // init map once, lazily
-  document.addEventListener("DOMContentLoaded", () => {});
   setTimeout(() => initMap(state.locations, CFG), 200);
 
-  // initial route from hash
   const hash = location.hash.replace("#", "").split(":");
   go(hash[0] || "home", hash[1]);
 
-  // register SW
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./service-worker.js").catch(() => {});
   }
