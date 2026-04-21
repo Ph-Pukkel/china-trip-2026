@@ -1,5 +1,5 @@
 // service-worker.js — simple offline cache for Reisgenoot China 2026
-const VERSION = "v3-2026-04-21-herodesign";
+const VERSION = "v4-2026-04-21-designsystem";
 const CACHE = `china2026-${VERSION}`;
 const APP_SHELL = [
   "./",
@@ -20,6 +20,8 @@ const APP_SHELL = [
   "./icons/icon.svg",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
+  "./icons/icons-sprite.svg",
+  "./icons/logo-mark.svg",
 ];
 
 self.addEventListener("install", (e) => {
