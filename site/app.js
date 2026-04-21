@@ -9,10 +9,14 @@ import { HELP_CONTENT } from "./help-content.js";
 import { PHRASES } from "./phrases.js";
 
 const CFG = window.APP_CONFIG;
+// Auto-login: geen drempel voor het gezin — iedereen met de URL is binnen.
+if (localStorage.getItem("trip_code") !== CFG.TRIP_CODE) {
+  localStorage.setItem("trip_code", CFG.TRIP_CODE);
+}
 const state = {
   lang: localStorage.getItem("lang") || "nl",
   user: localStorage.getItem("user") || "",
-  loggedIn: localStorage.getItem("trip_code") === CFG.TRIP_CODE,
+  loggedIn: true,
   locations: [],
   brands: [],
   shoppingTips: [],
@@ -615,14 +619,8 @@ window.addEventListener("keydown", (e) => {
   state.sync = new SyncClient(CFG, state);
   await state.sync.init();
 
-  // login gate
-  if (!state.loggedIn) {
-    document.getElementById("login-gate").classList.remove("hidden");
-    document.querySelector("main").querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
-    document.querySelector("nav[role='tablist']").classList.add("opacity-40", "pointer-events-none");
-  } else {
-    document.querySelector("nav[role='tablist']").classList.remove("opacity-40", "pointer-events-none");
-  }
+  // login gate permanent uit — we loggen iedereen automatisch in
+  document.getElementById("login-gate")?.classList.add("hidden");
 
   // init map once, lazily
   document.addEventListener("DOMContentLoaded", () => {});
