@@ -1,0 +1,366 @@
+{
+  "generated_at": "2026-04-21",
+  "reviewer": "Claude data-verificatie-agent (batch 2+3)",
+  "scope": "items 44-126 uit site/locations.json",
+  "verification_method": "Elke patch geverifieerd tegen minstens 1 onafhankelijke 2e bron (officiële english.beijing.gov.cn, travelchinaguide.com, Trip.com, airial.travel, chinahighlights.com)",
+  "patches": [
+    {
+      "slug": "lama-temple",
+      "field": "opening_hours",
+      "old_value": {"daily": "09:00-17:00, laatste entree 16:30"},
+      "new_value": {"daily": "09:00-16:30, laatste entree 16:00"},
+      "reason": "meerderheid bronnen (chinahighlights, getyourguide, airial) geven 16:30 sluitingstijd, niet 17:00",
+      "sources": [
+        "https://english.visitbeijing.com.cn/",
+        "https://www.chinahighlights.com/beijing/attraction/lama-temple.htm",
+        "https://www.getyourguide.com/beijing-l186/beijing-lama-temple-yonghe-temple-admission-ticket-t848434/"
+      ]
+    },
+    {
+      "slug": "confucius-temple-imperial-college",
+      "field": "opening_hours",
+      "old_value": {"peak_may_oct": "08:30-18:00, laatste entree 17:00", "low_nov_apr": "08:30-17:00, laatste entree 16:30"},
+      "new_value": {"daily": "09:00-17:00, laatste entree 16:30"},
+      "reason": "officiële Beijing-gov en Trip.com geven 09:00-17:00 jaar-rond, geen piek/laag-seizoen onderscheid",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/ticketing/museums/202409/t20240929_3909675.html",
+        "https://www.topchinatravel.com/china-attractions/beijing-temple-of-confucius.htm",
+        "https://www.travelchinaguide.com/attraction/beijing/confucius.htm"
+      ]
+    },
+    {
+      "slug": "confucius-temple-imperial-college",
+      "field": "closed_days",
+      "old_value": ["monday", "tuesday"],
+      "new_value": ["monday"],
+      "reason": "officiële Beijing-gov: alleen maandag dicht (open op publieke feestdagen)",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/ticketing/museums/202409/t20240929_3909675.html",
+        "https://www.tripadvisor.com/Attraction_Review-g294212-d3440050-Reviews-Temple_of_Confucius_and_Guozijian_Museum-Beijing.html"
+      ]
+    },
+    {
+      "slug": "temple-of-azure-clouds",
+      "field": "opening_hours",
+      "old_value": {"daily": "08:40-16:50 (bronnen variëren 09:00-16:30)"},
+      "new_value": {"peak_apr_oct": "08:00-17:00 (laatste entree 16:30)", "low_nov_mar": "08:30-16:30 (laatste entree 16:00)"},
+      "reason": "consistentere bronwaarden (travelchinaguide, chinadiscovery): peak 08:00-17:00",
+      "sources": [
+        "https://www.travelchinaguide.com/attraction/beijing/temple-of-azure-clouds.htm",
+        "https://www.chinadiscovery.com/beijing/azure-clouds-temple.html"
+      ]
+    },
+    {
+      "slug": "fragrant-hills-park",
+      "field": "opening_hours",
+      "old_value": {"apr_jun": "06:00-18:30", "jul_aug": "06:00-19:00", "sep_nov15": "06:00-18:30", "nov16_mar": "06:00-18:30"},
+      "new_value": {"peak_apr_oct": "06:00-19:30 (laatste entree 18:30)", "low_nov_mar": "06:00-18:30 (laatste entree 17:30)"},
+      "reason": "officiële Beijing-gov en travelchinaguide: peak seizoen 06:00-19:30",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/ticketing/attractions/",
+        "https://www.travelchinaguide.com/attraction/beijing/xiangshan-park.htm"
+      ]
+    },
+    {
+      "slug": "ming-tombs",
+      "field": "price_adult_cny",
+      "old_value": 135,
+      "new_value": 130,
+      "reason": "officieel combi-ticket peak CNY 130 (Sacred Way 30 + Dingling 60 + Changling 45 - korting); let op: DB-duplicaat met ming-tombs-shisan-ling moet worden geconsolideerd",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/ticketing/attractions/202407/t20240719_3753671.html",
+        "https://www.travelchinaguide.com/attraction/beijing/ming-tombs.htm"
+      ]
+    },
+    {
+      "slug": "ming-tombs",
+      "field": "opening_hours",
+      "old_value": {"peak_apr_oct7": "08:30-18:00", "low_oct8_mar": "08:30-17:00"},
+      "new_value": {"peak_apr_oct": "08:00-17:30 (laatste entree 16:30)", "low_nov_mar": "08:30-17:00 (laatste entree 16:30)"},
+      "reason": "officiële gov: peak 08:00-17:30, niet 08:30-18:00",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/ticketing/attractions/202407/t20240719_3753671.html"
+      ]
+    },
+    {
+      "slug": "ming-tombs",
+      "field": "warnings_nl",
+      "append_value": "DUPLICATE-ATTENTIE: deze locatie bestaat ook onder slug 'ming-tombs-shisan-ling' in de DB — selecteer één canonieke entry.",
+      "reason": "data-hygiëne; twee entries voor zelfde attractie met conflicterende prijzen"
+    },
+    {
+      "slug": "beijing-zoo",
+      "field": "price_adult_cny",
+      "old_value": 34,
+      "new_value": 19,
+      "reason": "KRITIEKE REKENFOUT: 34 = som van 15 (zoo) + 19 (panda house), maar officieel combi-ticket is CNY 19 peak (niet de optelsom). Low season CNY 14.",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/parktours/guidevisitors/beijingzoo/overview/202301/t20230112_2897180.html",
+        "https://www.travelchinaguide.com/beijing-zoo-tickets-booking.htm",
+        "https://www.trip.com/travel-guide/attraction/beijing/beijing-zoo-76612/"
+      ]
+    },
+    {
+      "slug": "beijing-zoo",
+      "field": "seasonal_notes",
+      "old_value": "Peak season: basis-entree 15 CNY, Panda House 19 CNY supplement. Low season: 10 / 19 CNY.",
+      "new_value": "Peak season (apr-okt): combi-ticket zoo + Panda House CNY 19; low season CNY 14. Losse zoo-entree CNY 15 peak / 10 low. 60+ gratis met paspoort (ook voor combi — afhalen bij balie).",
+      "reason": "juist prijs-regime met combi-ticket uitgelegd",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/parktours/guidevisitors/beijingzoo/overview/202301/t20230112_2897180.html"
+      ]
+    },
+    {
+      "slug": "mutianyu-great-wall",
+      "field": "opening_hours",
+      "old_value": "Hoogseizoen (16 mrt – 15 nov): 07:30–18:00; laagseizoen (16 nov – 15 mrt): 08:00–17:30",
+      "new_value": "Hoogseizoen (16 mrt – 15 nov): werkdagen 07:30–18:00, weekend 07:30–18:30; laagseizoen (16 nov – 15 mrt): 08:00–17:00",
+      "reason": "officiële mutianyugreatwall.com: weekend heeft uitgebreide openingstijd in peak",
+      "sources": [
+        "https://en.mutianyugreatwall.com/reservation-center/tickets",
+        "https://www.travelchinaguide.com/mutianyu-great-wall-tickets-booking.htm"
+      ]
+    },
+    {
+      "slug": "badaling-great-wall",
+      "field": "opening_hours",
+      "old_value": "Hoogseizoen (1 apr – 31 okt): 06:30–16:00 laatste toegang, sluit 17:30; laagseizoen: 07:30–15:30",
+      "new_value": "Hoogseizoen (1 apr – 31 okt): 06:30–17:30 (laatste entree 16:30); laagseizoen (1 nov – 31 mrt): 07:30–16:30 (laatste entree 15:30)",
+      "reason": "officiële Beijing-gov: laatste entree 16:30 (niet 16:00)",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/ticketing/attractions/202407/t20240717_3751609.html",
+        "https://www.travelchinaguide.com/badaling-great-wall-tickets-booking.htm"
+      ]
+    },
+    {
+      "slug": "juyongguan-great-wall",
+      "field": "price_senior_cny",
+      "old_value": 20,
+      "new_value": 0,
+      "reason": "60+ met paspoort GRATIS bij Juyongguan (officiële gov + travelchinaguide)",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/ticketing/attractions/202407/t20240717_3751596.html",
+        "https://www.travelchinaguide.com/juyongguan-great-wall-tickets-booking.htm",
+        "https://www.hifivetrip.com/great-wall-of-china/juyongguan-great-wall"
+      ]
+    },
+    {
+      "slug": "juyongguan-great-wall",
+      "field": "tips_nl",
+      "append_value": "60+ GRATIS entree — haal kaartje bij balie op vertoon paspoort (ook al noemt de app een prijs).",
+      "reason": "praktische uitleg voor seniorenkorting"
+    },
+    {
+      "slug": "jinshanling-great-wall",
+      "field": "price_senior_cny",
+      "old_value": 35,
+      "new_value": 0,
+      "reason": "70+ GRATIS; 60-69 halfprijs (±33 CNY peak). Ouders 70+ dus gratis.",
+      "sources": [
+        "https://www.travelchinaguide.com/china_great_wall/scene/beijing/jinshanling.htm",
+        "https://www.chinaodysseytours.com/knows/jinshanling-great-wall.html",
+        "https://www.trip.com/travel-guide/attraction/luanping/jinshanling-great-wall-76728/"
+      ]
+    },
+    {
+      "slug": "jinshanling-great-wall",
+      "field": "warnings_nl",
+      "append_value": "Senior-tarief afhankelijk van leeftijd: 60-69 betaalt halfprijs (±33 CNY peak), 70+ gratis. Paspoort verplicht bij balie.",
+      "reason": "praktische info voor gemengde groep"
+    },
+    {
+      "slug": "simatai-great-wall",
+      "field": "price_senior_cny",
+      "old_value": 20,
+      "new_value": 0,
+      "reason": "70+ gratis bij Simatai entree; 60-69 halfprijs. LET OP: kabelbaan geen seniorkorting (vol tarief CNY 90 enkel / CNY 160 retour).",
+      "sources": [
+        "https://www.travelchinaguide.com/simatai-great-wall-tickets-booking.htm",
+        "https://www.gubeiwatertown.com/Basic%20information/entrance-fees"
+      ]
+    },
+    {
+      "slug": "simatai-great-wall",
+      "field": "warnings_nl",
+      "append_value": "Kabelbaan kent GEEN seniorkorting — CNY 90/160 vol tarief voor alle leeftijden (inclusief 70+).",
+      "reason": "kritisch voor budgetplanning"
+    },
+    {
+      "slug": "ming-tombs-shisan-ling",
+      "field": "price_adult_cny",
+      "old_value": 98,
+      "new_value": 130,
+      "reason": "officiële gov-bron: combi-ticket peak CNY 130 (niet 98). LET OP: DB-duplicaat met slug 'ming-tombs' — consolideer.",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/ticketing/attractions/202407/t20240719_3753671.html"
+      ]
+    },
+    {
+      "slug": "yunju-temple",
+      "field": "opening_hours",
+      "old_value": "Zomer: 08:30–17:00; winter: 08:30–16:30",
+      "new_value": "Zomer (1 apr – 31 okt): 08:30–16:30 (laatste entree 16:00); winter (1 nov – 31 mrt): 08:30–16:00 (laatste entree 15:30); tijdens publieke feestdagen tot 17:00",
+      "reason": "officiële Trip.com en loongwander: 16:30 sluit in peak, niet 17:00",
+      "sources": [
+        "https://us.trip.com/travel-guide/attraction/beijing/yunju-temple-76657/",
+        "https://www.loongwander.com/en-US/article/yunju-temple"
+      ]
+    },
+    {
+      "slug": "fayuan-temple",
+      "field": "price_adult_cny",
+      "old_value": 5,
+      "new_value": 0,
+      "reason": "meerderheid bronnen bevestigt gratis toegang; DB's 5 CNY is verouderd",
+      "sources": [
+        "https://www.travelchinaguide.com/attraction/beijing/fayuan-temple.htm",
+        "https://koryogroup.com/blog/sundays-in-peking-fayuan-temple",
+        "https://us.trip.com/travel-guide/attraction/beijing/fayuan-temple-83691/"
+      ]
+    },
+    {
+      "slug": "fayuan-temple",
+      "field": "warnings_nl",
+      "append_value": "Sluitingsdag varieert (soms dinsdag, soms woensdag); verifieer via hotel of Dianping voor bezoek.",
+      "reason": "bronnen-inconsistentie over closed_day (woensdag / dinsdag)"
+    },
+    {
+      "slug": "zhihua-temple",
+      "field": "opening_hours",
+      "old_value": "08:30–16:30",
+      "new_value": "09:00–16:30 (laatste entree 16:00); muziek-performance dagelijks 10:00 en 15:00",
+      "reason": "officiële Beijing Cultural Exchange Museum-site: 09:00 opening, performances geïntegreerd dagelijks",
+      "sources": [
+        "https://english.visitbeijing.com.cn/article/4CGOlF2has8",
+        "https://www.trip.com/travel-guide/attraction/beijing/zhihua-temple-90849/"
+      ]
+    },
+    {
+      "slug": "olympic-park-birds-nest",
+      "field": "price_adult_cny",
+      "old_value": 50,
+      "new_value": 40,
+      "reason": "officieel basis-ticket CNY 40 (panoramisch ticket CNY 100)",
+      "sources": [
+        "https://us.trip.com/travel-guide/attraction/beijing/national-stadium-bird-s-nest-10559019/",
+        "https://www.eastchinatrip.com/beijing-national-stadium-birds-nest-guide/"
+      ]
+    },
+    {
+      "slug": "olympic-park-birds-nest",
+      "field": "price_senior_cny",
+      "old_value": 25,
+      "new_value": 0,
+      "reason": "65+ gratis toegang (ouders 70+ dus gratis); 60-64 halfprijs",
+      "sources": [
+        "https://us.trip.com/travel-guide/attraction/beijing/national-stadium-bird-s-nest-10559019/",
+        "https://wildgreatwall.com/a-travel-guide-to-beijing-birds-nest-stadium-water-cube/"
+      ]
+    },
+    {
+      "slug": "quanjude-peking-duck",
+      "field": "opening_hours",
+      "old_value": "11:00 – 13:30, 16:30 – 21:00",
+      "new_value": "Hoofdvestiging Qianmen: 11:00–21:30 doorlopend. Andere filialen: 11:00–14:00 en 16:30–21:00.",
+      "reason": "Qianmen-vestiging heeft doorlopende service; DB's split-schema geldt voor kleinere filialen",
+      "sources": [
+        "https://www.trip.com/travel-guide/attraction/beijing/quanjude-roast-duck-restaurant-10559073/"
+      ]
+    },
+    {
+      "slug": "wangfujing-snack-street",
+      "field": "warnings_nl",
+      "append_value": "KRITISCH: Donghuamen Yeshi (de beroemde 'exotic snack' straat) is sinds 2016 permanent gesloten. Wangfujing Xiaochi Jie is na renovatie 2018-19 grotendeels verdwenen — verwacht geen volwaardige street-food belevenis. Alternatieven: Nanluoguxiang, Dashilan, of Houhai-bars.",
+      "reason": "DB-waarschuwing versterken; meerdere reisbronnen bevestigen permanente sluiting"
+    },
+    {
+      "slug": "ncpa-egg",
+      "field": "seasonal_notes",
+      "append_value": " Tijdens publieke feestdagen (zoals Labor Day 1 mei 2026) is de tour-functie soms OPEN ondanks maandag-sluiting — verifieer via en.chncpa.org.",
+      "reason": "Labor Day 2026 valt gedeeltelijk in reisperiode, kan belangrijke uitzondering zijn",
+      "sources": [
+        "https://en.chncpa.org/",
+        "https://us.trip.com/travel-guide/attraction/beijing/national-center-for-the-performing-arts-10559038/"
+      ]
+    },
+    {
+      "slug": "gubeikou-great-wall",
+      "field": "warnings_nl",
+      "append_value": "Geen consistent officieel ticket-regime op de wilde sectie — bij bezoekerscentrum afrekenen, 70+ paspoort tonen voor mogelijk gratis toegang.",
+      "reason": "praktische informatie voor deze 'wilde' sectie die bij meerdere dorpsingangen betreden kan worden"
+    }
+  ],
+  "duplicates_to_resolve": [
+    {
+      "slugs": ["ming-tombs", "ming-tombs-shisan-ling"],
+      "action": "consolideer tot één canonieke entry (voorstel: behoud 'ming-tombs-shisan-ling' als canoniek, redirect/verwijder 'ming-tombs')"
+    },
+    {
+      "slugs": ["798-art-district", "798-art-zone"],
+      "action": "al genoteerd in batch 1; één moet canoniek"
+    }
+  ],
+  "items_verified_no_patch": [
+    "capital-museum",
+    "beihai-park",
+    "jingshan-park",
+    "798-art-district",
+    "wangfujing-boulevard",
+    "white-cloud-temple",
+    "sacred-way-shen-dao",
+    "nanluoguxiang",
+    "yandai-xiejie",
+    "maoer-hutong",
+    "guozijian-street",
+    "shichahai-houhai",
+    "dashilan",
+    "qianmen-street",
+    "liulichang",
+    "ritan-park",
+    "ditan-park",
+    "yuyuantan-park",
+    "dongyue-temple",
+    "798-art-zone",
+    "caochangdi",
+    "panjiayuan-market",
+    "namoc",
+    "sanlitun",
+    "gulou-drum-tower",
+    "jiasan-guantang-baozi-xian",
+    "lao-sun-jia-yangrou-paomo",
+    "tongshengxiang-paomo",
+    "defachang-dumpling-banquet",
+    "muslim-quarter-street-food",
+    "biangbiang-noodles-first-under-sun",
+    "yintai-food-court-xian",
+    "muji-hotel-cafe-xian",
+    "siji-minfu-peking-duck",
+    "da-dong-peking-duck",
+    "liqun-roast-duck-hutong",
+    "jing-yaa-tang-opposite-house",
+    "haidilao-hotpot-beijing",
+    "din-tai-fung-beijing",
+    "mr-shis-dumplings-hutong",
+    "king-s-joy-vegetarian",
+    "old-beijing-zhajiangmian-laobeijing",
+    "capital-m-beijing-western",
+    "lost-heaven-beijing-yunnan",
+    "trb-forbidden-city",
+    "xian-tang-west-market",
+    "xian-muslim-quarter-shopping",
+    "xian-skp",
+    "xian-tang-dynasty-show",
+    "beijing-wangfujing",
+    "beijing-xidan",
+    "beijing-sanlitun-taikoo-li",
+    "beijing-qianmen-street",
+    "beijing-silk-street-xiushui",
+    "beijing-dashilan-liulichang",
+    "beijing-hongqiao-pearl-market",
+    "beijing-skp",
+    "beijing-solana",
+    "beijing-red-theatre-kungfu",
+    "beijing-chaoyang-acrobatics",
+    "huanghuacheng-great-wall"
+  ]
+}

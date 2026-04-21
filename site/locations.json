@@ -2474,7 +2474,7 @@
       "lng": 116.4118,
       "nearest_metro": "Yonghegong Lama Temple (Lijn 2 / Lijn 5) — exit F, 5 min lopen",
       "opening_hours": {
-        "daily": "09:00-17:00, laatste entree 16:30"
+        "daily": "09:00-16:30, laatste entree 16:00"
       },
       "closed_days": [],
       "seasonal_notes": "Het hele jaar geopend. Sinds recent tijd-slot reservering verplicht 7 dagen vooraf.",
@@ -2526,12 +2526,10 @@
       "lng": 116.4098,
       "nearest_metro": "Yonghegong Lama Temple (Lijn 2 / Lijn 5) — 5 min lopen",
       "opening_hours": {
-        "peak_may_oct": "08:30-18:00, laatste entree 17:00",
-        "low_nov_apr": "08:30-17:00, laatste entree 16:30"
+        "daily": "09:00-17:00, laatste entree 16:30"
       },
       "closed_days": [
-        "monday",
-        "tuesday"
+        "monday"
       ],
       "seasonal_notes": "Free Confuciaanse ritueel-muziek (dacheng) gehouden 15 min, om 10:00, 11:00, 14:00, 15:00, 16:00.",
       "price_adult_cny": 30,
@@ -2581,7 +2579,8 @@
       "lng": 116.1911,
       "nearest_metro": "Xijiao Line (Western Suburbs Line) naar eindhalte Xiangshan; dan 15-20 min lopen door park",
       "opening_hours": {
-        "daily": "08:40-16:50 (bronnen variëren 09:00-16:30)"
+        "peak_apr_oct": "08:00-17:00 (laatste entree 16:30)",
+        "low_nov_mar": "08:30-16:30 (laatste entree 16:00)"
       },
       "closed_days": [],
       "seasonal_notes": "Je betaalt eerst Fragrant Hills Park-entree (10 CNY peak), dan supplement voor tempel.",
@@ -2633,10 +2632,8 @@
       "lng": 116.1885,
       "nearest_metro": "Xijiao Line (Western Suburbs) naar eindhalte Xiangshan, 10 min lopen naar oostpoort",
       "opening_hours": {
-        "apr_jun": "06:00-18:30",
-        "jul_aug": "06:00-19:00",
-        "sep_nov15": "06:00-18:30",
-        "nov16_mar": "06:00-18:30"
+        "peak_apr_oct": "06:00-19:30 (laatste entree 18:30)",
+        "low_nov_mar": "06:00-18:30 (laatste entree 17:30)"
       },
       "closed_days": [],
       "seasonal_notes": "Peak season (apr-midden nov): 10 CNY; low season: 5 CNY. Kabelbaan los ticket ±60 CNY retour.",
@@ -2689,12 +2686,12 @@
       "lng": 116.228,
       "nearest_metro": "Changping Line naar Changping Xishankou station, dan bus Chang 78 naar scenic area (NIET 'Ming Tombs' station — te ver)",
       "opening_hours": {
-        "peak_apr_oct7": "08:30-18:00",
-        "low_oct8_mar": "08:30-17:00"
+        "peak_apr_oct": "08:00-17:30 (laatste entree 16:30)",
+        "low_nov_mar": "08:30-17:00 (laatste entree 16:30)"
       },
       "closed_days": [],
       "seasonal_notes": "Peak season (apr-okt): Sacred Way 20 CNY, Dingling 40 CNY, Changling 30 CNY. Combi-ticket ±135 CNY incl. alle tombes + Sacred Way (peak).",
-      "price_adult_cny": 135,
+      "price_adult_cny": 130,
       "price_senior_cny": 0,
       "price_child_cny": 0,
       "booking_required": true,
@@ -2711,7 +2708,8 @@
         "Dagtrip: reistijd 60-90 min enkele reis; totaal 7-8 uur incl. reizen.",
         "Metro-station 'Ming Tombs' op Changping-lijn ligt 4 km van werkelijk park — pak Changping Xishankou + bus Chang 78 in plaats daarvan.",
         "1 mei week: massa's binnenlandse toeristen; overweeg 27-30 apr.",
-        "Veel open loopwerk (Sacred Way 7 km). Elektrische wagentjes optioneel."
+        "Veel open loopwerk (Sacred Way 7 km). Elektrische wagentjes optioneel.",
+        "DUPLICATE-ATTENTIE: deze locatie bestaat ook onder slug 'ming-tombs-shisan-ling' in de DB — selecteer één canonieke entry."
       ],
       "source_urls": [
         "https://english.beijing.gov.cn/specials/ticketing/attractions/202407/t20240719_3753671.html",
@@ -2747,8 +2745,8 @@
         "low_nov_mar": "07:30-17:00, laatste entree 16:30"
       },
       "closed_days": [],
-      "seasonal_notes": "Peak season: basis-entree 15 CNY, Panda House 19 CNY supplement. Low season: 10 / 19 CNY.",
-      "price_adult_cny": 34,
+      "seasonal_notes": "Peak season (apr-okt): combi-ticket zoo + Panda House CNY 19; low season CNY 14. Losse zoo-entree CNY 15 peak / 10 low. 60+ gratis met paspoort (ook voor combi — afhalen bij balie).",
+      "price_adult_cny": 19,
       "price_senior_cny": 0,
       "price_child_cny": 0,
       "booking_required": true,
@@ -2907,7 +2905,7 @@
       "closed_days": [
         "monday"
       ],
-      "seasonal_notes": "Tours: 40 CNY (basis). Avondshows: losse tickets variëren 80-880 CNY.",
+      "seasonal_notes": "Tours: 40 CNY (basis). Avondshows: losse tickets variëren 80-880 CNY. |  Tijdens publieke feestdagen (zoals Labor Day 1 mei 2026) is de tour-functie soms OPEN ondanks maandag-sluiting — verifieer via en.chncpa.org.",
       "price_adult_cny": 40,
       "price_senior_cny": 20,
       "price_child_cny": 20,
@@ -3015,7 +3013,7 @@
       "lat": 40.4319,
       "lng": 116.5704,
       "nearest_metro": "geen metro; directe bus 867 vanaf Dongzhimen Wai (apr-nov), shuttle vanaf Dongzhimen, of privé-auto/taxi",
-      "opening_hours": "Hoogseizoen (16 mrt – 15 nov): 07:30–18:00; laagseizoen (16 nov – 15 mrt): 08:00–17:30",
+      "opening_hours": "Hoogseizoen (16 mrt – 15 nov): werkdagen 07:30–18:00, weekend 07:30–18:30; laagseizoen (16 nov – 15 mrt): 08:00–17:00",
       "closed_days": [],
       "seasonal_notes": "KRITIEK voor deze reis: De kabelbaan (cable car) is sinds 15 april 2026 14:00 gesloten voor onderhoud. Einddatum NIET officieel gepubliceerd per 20-04-2026. Chairlift (stoeltjeslift, open-air) en toboggan (slee-afdaling) blijven naar verwachting WEL in bedrijf — deze zijn het advies-alternatief. April is mooi weer (10–20 °C), bloesem en lentegroen.",
       "price_adult_cny": 45,
@@ -3062,7 +3060,7 @@
       "lat": 40.3587,
       "lng": 116.0243,
       "nearest_metro": "geen direct; hogesnelheidstrein vanaf Qinghe Railway Station (metro Lijn 13 of Changping Lijn) naar Badaling Great Wall Station (20 min, CNY 16-28 2e klas)",
-      "opening_hours": "Hoogseizoen (1 apr – 31 okt): 06:30–16:00 laatste toegang, sluit 17:30; laagseizoen: 07:30–15:30",
+      "opening_hours": "Hoogseizoen (1 apr – 31 okt): 06:30–17:30 (laatste entree 16:30); laagseizoen (1 nov – 31 mrt): 07:30–16:30 (laatste entree 15:30)",
       "closed_days": [],
       "seasonal_notes": "April 2026 = hoogseizoen en vlak voor Golden Week. 29 april – 3 mei Labour Day-periode = MASSA (tot 65.000 pp/dag, toegangsplafond). S2-trein via Huangtudian is NIET operationeel in 2026 (opgeschort voor werkzaamheden 2025–2027). Gebruik hogesnelheidstrein vanaf Qinghe.",
       "price_adult_cny": 40,
@@ -3111,12 +3109,12 @@
       "closed_days": [],
       "seasonal_notes": "April = hoogseizoen. Geen onderhoudsmeldingen bekend voor apr 2026. Fort-complex ligt in dal, koelere microklimaat — neem een laag extra.",
       "price_adult_cny": 40,
-      "price_senior_cny": 20,
+      "price_senior_cny": 0,
       "price_child_cny": 20,
       "booking_required": false,
       "booking_url": null,
       "duration_min": 300,
-      "tips_nl": "Combineer met Ming Tombs (zelfde richting): ochtend Ming Tombs, lunch onderweg, middag Juyongguan. Met privé-taxi/Didi ca. CNY 600-800 voor halve dag. Bus 919 vanaf Deshengmen kost CNY 20 (60 min). Ouders kunnen vanaf parkeerterrein het fort van onderaf bekijken zonder veel trappen. Wie wél wil klimmen: westelijke kant is korter en minder steil dan de oostelijke. Contact: +86-10-69771665.",
+      "tips_nl": "Combineer met Ming Tombs (zelfde richting): ochtend Ming Tombs, lunch onderweg, middag Juyongguan. Met privé-taxi/Didi ca. CNY 600-800 voor halve dag. Bus 919 vanaf Deshengmen kost CNY 20 (60 min). Ouders kunnen vanaf parkeerterrein het fort van onderaf bekijken zonder veel trappen. Wie wél wil klimmen: westelijke kant is korter en minder steil dan de oostelijke. Contact: +86-10-69771665. | 60+ GRATIS entree — haal kaartje bij balie op vertoon paspoort (ook al noemt de app een prijs).",
       "warnings_nl": "Om écht op de muur te komen: veel trappen vanaf parkeerterrein — voor 70+ bezoekers is het fort-complex zelf al mooi, hoef niet hoog te klimmen. Geen kabelbaan. Pas op voor steile onbewaakte trappen hogerop.",
       "source_urls": [
         "https://english.beijing.gov.cn/specials/ticketing/attractions/202407/t20240717_3751596.html",
@@ -3155,13 +3153,13 @@
       "closed_days": [],
       "seasonal_notes": "April = ideaal seizoen (koel, fris, heldere zichten, geen hitte). Lokale sleehel gras begint te groeien. Geen bekende onderhoudsmeldingen apr 2026.",
       "price_adult_cny": 65,
-      "price_senior_cny": 35,
+      "price_senior_cny": 0,
       "price_child_cny": 35,
       "booking_required": true,
       "booking_url": "https://www.jslchangcheng.com",
       "duration_min": 540,
       "tips_nl": "Beste optie: privé-auto + chauffeur heen-terug (CNY 1200-1600 per dag voor 5 pax, onderhandelbaar). Directe toeristenbus vanaf Wangjing-West (bus line Jinshanling Express) vertrekt 08:00, terug ca. 15:00, CNY 50 enkele reis. Ter plekke: neem kabelbaan (CNY 40 enkele reis, CNY 60 retour) naar Zhuanduokou-ingang, klein rondje naar East Five-Window Tower. Wandelaars: 6 km route naar West-Simatai-richting. Tip: neem eigen lunch — weinig eten op de muur.",
-      "warnings_nl": "Voor 70+ ouders: volledige wandelroute is NIET geschikt (107 trappen omhoog, 120 omlaag op één punt). Niet geschikt voor mensen met knie- of evenwichtsproblemen. Alleen aangeraden als senioren bij kabelbaan-ingang blijven terwijl kinderen wandelen (goed logistiek plan nodig). Geen ziekenhuis dichtbij, reistijd 2,5 uur naar Beijing.",
+      "warnings_nl": "Voor 70+ ouders: volledige wandelroute is NIET geschikt (107 trappen omhoog, 120 omlaag op één punt). Niet geschikt voor mensen met knie- of evenwichtsproblemen. Alleen aangeraden als senioren bij kabelbaan-ingang blijven terwijl kinderen wandelen (goed logistiek plan nodig). Geen ziekenhuis dichtbij, reistijd 2,5 uur naar Beijing. | Senior-tarief afhankelijk van leeftijd: 60-69 betaalt halfprijs (±33 CNY peak), 70+ gratis. Paspoort verplicht bij balie.",
       "source_urls": [
         "https://www.chinadiscovery.com/hebei/chengde/jinshanling-great-wall.html",
         "https://www.travelchinaguide.com/china_great_wall/scene/beijing/jinshanling.htm",
@@ -3200,13 +3198,13 @@
       "closed_days": [],
       "seasonal_notes": "Avondtoegang het hele jaar, maar april-oktober is ideaal (warmer 's avonds). Weekend en 1 mei = extra druk. Drone-lichtshow op weekend-avonden hoogseizoen.",
       "price_adult_cny": 40,
-      "price_senior_cny": 20,
+      "price_senior_cny": 0,
       "price_child_cny": 20,
       "booking_required": true,
       "booking_url": "https://www.gubeiwatertown.com",
       "duration_min": 600,
       "tips_nl": "Reserveer ticket Simatai Great Wall MINIMAAL 24 uur vooruit (max 10 dagen vooruit) — dit is VERPLICHT. Gubei Water Town ticket apart: CNY 150 pp. Kabelbaan: CNY 90 enkel / CNY 160 retour (geen seniorenkorting). Avondtour: neem de round-trip kabelbaan (CNY 160/pp) omhoog, wandel 15 min tot Tower 6, geniet van lichten, kabelbaan terug. Praktisch: overnacht in Gubei Water Town (boutique-hotels) om niet in het donker terug te rijden. Vertrek-shuttle vanaf Dongzhimen 09:00 of 13:00.",
-      "warnings_nl": "STEILE TRAPPEN — delen hebben geen leuning of borstwering. NIET geschikt voor kinderen onder 6, mensen met evenwichtsproblemen, of hoogtevrees. Voor 70+ ouders: blijf bij kabelbaan-station en Tower 5, ga NIET richting Tower 7+. Niet-slipbare schoenen nodig (geen sandalen). Avondtoegang: neem zaklamp én jas (koud na zonsondergang). Kabelbaan sluit ca. 21:30.",
+      "warnings_nl": "STEILE TRAPPEN — delen hebben geen leuning of borstwering. NIET geschikt voor kinderen onder 6, mensen met evenwichtsproblemen, of hoogtevrees. Voor 70+ ouders: blijf bij kabelbaan-station en Tower 5, ga NIET richting Tower 7+. Niet-slipbare schoenen nodig (geen sandalen). Avondtoegang: neem zaklamp én jas (koud na zonsondergang). Kabelbaan sluit ca. 21:30. | Kabelbaan kent GEEN seniorkorting — CNY 90/160 vol tarief voor alle leeftijden (inclusief 70+).",
       "source_urls": [
         "https://www.gubeiwatertown.com/Things%20to%20do/walk-the-simatai-great-wall",
         "https://www.travelchinaguide.com/simatai-great-wall-tickets-booking.htm",
@@ -3295,7 +3293,7 @@
       "booking_url": null,
       "duration_min": 600,
       "tips_nl": "Alleen aanbevolen voor 1-2 van de kinderen (45-50) ALS ze echt ervaring hebben met bergwandelen, met een lokale gids (CNY 400-600 per dag). Gids boeken via Beijing Hikers of Wild Great Wall Adventures. 5-7 km van Gubeikou naar Jinshanling is de klassieke route (6-8 uur). Neem eigen eten/water, GPS, eerste hulp. NIET doen bij regen/onweer.",
-      "warnings_nl": "NIET GESCHIKT VOOR 70+ OUDERS. Losse stenen, steile stukken soms zonder borstwering, militair verboden gebied verdwaalbaar, geen mobiel-bereik op delen van het pad. Geen WC's, geen eten op de muur. Geen hulp beschikbaar bij ongeval. Detour nodig waar militair terrein de muur doorkruist.",
+      "warnings_nl": "NIET GESCHIKT VOOR 70+ OUDERS. Losse stenen, steile stukken soms zonder borstwering, militair verboden gebied verdwaalbaar, geen mobiel-bereik op delen van het pad. Geen WC's, geen eten op de muur. Geen hulp beschikbaar bij ongeval. Detour nodig waar militair terrein de muur doorkruist. | Geen consistent officieel ticket-regime op de wilde sectie — bij bezoekerscentrum afrekenen, 70+ paspoort tonen voor mogelijk gratis toegang.",
       "source_urls": [
         "https://www.chinahighlights.com/greatwall/section/gubeikou-greatwall.htm",
         "https://wildgreatwall.com/wild-great-wall/gubeikou-great-wall/",
@@ -3332,7 +3330,7 @@
       "opening_hours": "Hoogseizoen (apr-okt): 08:00–17:30; laagseizoen 08:30–17:00",
       "closed_days": [],
       "seasonal_notes": "April = mooi. Changling en Dingling volledig open. Mao Ling, Tai Ling, De Ling zouden in 2026-2028 openen — verifieer ter plekke. Shen Dao / Sacred Way het hele jaar open.",
-      "price_adult_cny": 98,
+      "price_adult_cny": 130,
       "price_senior_cny": 0,
       "price_child_cny": 49,
       "booking_required": false,
@@ -3416,7 +3414,7 @@
       "lat": 39.6122,
       "lng": 115.7581,
       "nearest_metro": "Fangshan Lijn naar Suzhuang, dan taxi; of privé-auto (1,5-2 uur)",
-      "opening_hours": "Zomer: 08:30–17:00; winter: 08:30–16:30",
+      "opening_hours": "Zomer (1 apr – 31 okt): 08:30–16:30 (laatste entree 16:00); winter (1 nov – 31 mrt): 08:30–16:00 (laatste entree 15:30); tijdens publieke feestdagen tot 17:00",
       "closed_days": [
         "monday"
       ],
@@ -3942,8 +3940,8 @@
       "opening_hours": "Park 24/7; Vogelnest-interieur 09:00–17:00; Water Cube 09:00–18:00 (verlichting tot ca. 22:00)",
       "closed_days": [],
       "seasonal_notes": null,
-      "price_adult_cny": 50,
-      "price_senior_cny": 25,
+      "price_adult_cny": 40,
+      "price_senior_cny": 0,
       "price_child_cny": 25,
       "booking_required": true,
       "booking_url": "https://www.n-s.cn/",
@@ -4033,14 +4031,14 @@
         "wednesday"
       ],
       "seasonal_notes": "Seringen-festival (丁香诗会) half april tot begin mei — ONZE REISPERIODE PERFECT. Dan is de tempel op z'n mooist.",
-      "price_adult_cny": 5,
+      "price_adult_cny": 0,
       "price_senior_cny": 0,
       "price_child_cny": 0,
       "booking_required": false,
       "booking_url": null,
       "duration_min": 60,
       "tips_nl": "Low-key alternatief voor de drukke Lama Temple. Tijdens seringen-festival komen dichters lezen en thee drinken — unieke belevenis. Monniken-studenten van de academie lopen er rond. Neem rustig de tijd op de binnenplaatsen.",
-      "warnings_nl": "Woensdag dicht. Toegang naar binnenkant sommige hallen beperkt wegens studie-activiteit.",
+      "warnings_nl": "Woensdag dicht. Toegang naar binnenkant sommige hallen beperkt wegens studie-activiteit. | Sluitingsdag varieert (soms dinsdag, soms woensdag); verifieer via hotel of Dianping voor bezoek.",
       "source_urls": [
         "https://www.travelchinaguide.com/attraction/beijing/fayuan-temple.htm",
         "https://en.wikipedia.org/wiki/Fayuan_Temple"
@@ -4073,7 +4071,7 @@
       "lat": 39.9178,
       "lng": 116.4288,
       "nearest_metro": "Chaoyangmen (lijn 2 / 6), uitgang F",
-      "opening_hours": "08:30–16:30",
+      "opening_hours": "09:00–16:30 (laatste entree 16:00); muziek-performance dagelijks 10:00 en 15:00",
       "closed_days": [
         "monday"
       ],
@@ -4826,7 +4824,7 @@
       "lat": 39.8988,
       "lng": 116.3954,
       "nearest_metro": "Lijn 2 — Qianmen, ca. 2 min lopen",
-      "opening_hours": "11:00 – 13:30, 16:30 – 21:00",
+      "opening_hours": "Hoofdvestiging Qianmen: 11:00–21:30 doorlopend. Andere filialen: 11:00–14:00 en 16:30–21:00.",
       "closed_days": [],
       "reservation_required": true,
       "reservation_url": "https://www.quanjude.com.cn — via hotel-conciërge of +86 10 6511 2418. Reserveer 2-3 dagen vooruit.",
@@ -5215,7 +5213,8 @@
       ],
       "warnings_nl": [
         "Dit is géén culinair highlight — beschouw het als Chinatown-spektakel voor de foto's. Hygiëne variabel; eet enkel vers-gegrild. Zakkenrollers actief.",
-        "KRITISCH: traditionele snack-foodstalls grotendeels verdwenen sinds 2016-2019; het is nu meer een cultuursteeg met souvenirs dan street-food. Beter alternatief: Huguosi Snack Street of Gui Jie."
+        "KRITISCH: traditionele snack-foodstalls grotendeels verdwenen sinds 2016-2019; het is nu meer een cultuursteeg met souvenirs dan street-food. Beter alternatief: Huguosi Snack Street of Gui Jie.",
+        "KRITISCH: Donghuamen Yeshi (de beroemde 'exotic snack' straat) is sinds 2016 permanent gesloten. Wangfujing Xiaochi Jie is na renovatie 2018-19 grotendeels verdwenen — verwacht geen volwaardige street-food belevenis. Alternatieven: Nanluoguxiang, Dashilan, of Houhai-bars."
       ],
       "source_urls": [
         "https://www.travelchinaguide.com/cityguides/beijing/wangfujing-snack-street.htm",
