@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <title>Reisgenoot China 2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#B4451F" />
+  <meta name="description" content="Reisgenoot voor onze China-reis: Xi'an & Beijing, 25 april – 2 mei 2026." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+
+  <!-- Tailwind Play CDN (no build step) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: "#FAF6EF",
+            "bg-card": "#FFFDF8",
+            "ink-900": "#1A1613",
+            "ink-700": "#3E352E",
+            "ink-500": "#6F6055",
+            line: "#E8DFD1",
+            brand: { 50: "#FAF6EF", 600: "#B4451F", 700: "#8E3414" },
+            trust: { 100: "#D5ECEC", 700: "#0E5A5E" },
+            accent: { 500: "#D39E3A", 800: "#6B4A0F" },
+            success: { 100: "#D8EBDE", 700: "#1E6F4A" },
+            warn: { 100: "#FBEBCC", 700: "#9A5A00" },
+            danger: { 100: "#F7DADB", 700: "#B01E24" },
+          },
+          borderRadius: { "2xl": "1rem", "3xl": "1.5rem" },
+          fontFamily: {
+            sans: [
+              "ui-sans-serif", "system-ui", "-apple-system", '"Segoe UI Variable"', '"Segoe UI"',
+              "Roboto", '"Helvetica Neue"', "Arial", '"Noto Sans"',
+              '"PingFang SC"', '"Microsoft YaHei"', '"Hiragino Sans GB"', "sans-serif",
+            ],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Leaflet (map) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Sortable (drag-and-drop planner) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+  <!-- Supabase JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    html, body { background: #FAF6EF; color: #1A1613; font-size: 18px; }
+    body { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .tab-active { color: #B4451F; }
+    .tab-active .tab-underline { background: #B4451F; }
+    .btn-primary { background: #B4451F; color: #FAF6EF; }
+    .btn-primary:hover { background: #8E3414; }
+    .chip-on { background: #B4451F; color: #FAF6EF; border-color: #B4451F; }
+    .focus-ring:focus-visible { outline: 4px solid rgba(180,69,31,.4); outline-offset: 2px; }
+    .leaflet-container { border-radius: 1rem; }
+    .drag-handle { cursor: grab; touch-action: none; }
+    .chosen { opacity: .8; background: #FBEBCC; }
+    .ghost-item { opacity: .4; }
+    /* Screen-reader only */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    /* Offline banner */
+    #offline-banner { transition: transform .2s; }
+    #offline-banner.hidden { transform: translateY(-100%); }
+    /* Toasts */
+    .toast { animation: fade-in .2s ease-out; }
+    @keyframes fade-in { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- OFFLINE BANNER -->
+  <div id="offline-banner" class="hidden fixed top-0 inset-x-0 z-40 bg-warn-100 text-warn-700 text-center py-2 font-semibold">
+    Zonder internet — je planning blijft werken, wijzigingen syncen automatisch.
+  </div>
+
+  <!-- TOP BAR -->
+  <header class="sticky top-0 z-30 bg-bg/95 backdrop-blur border-b border-line">
+    <div class="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+      <button id="btn-home-logo" class="text-xl font-bold text-brand-700 focus-ring rounded-lg" aria-label="Terug naar Thuis">
+        🏮 <span data-i18n="app_title">Reisgenoot China 2026</span>
+      </button>
+      <div class="flex items-center gap-2">
+        <label class="sr-only" for="lang-select" data-i18n="language">Taal</label>
+        <select id="lang-select" class="h-10 px-2 rounded-lg border border-line bg-bg-card text-base focus-ring">
+          <option value="nl">🇳🇱 NL</option>
+          <option value="es">🇪🇸 ES</option>
+          <option value="zh">🇨🇳 中文</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 pt-4 pb-8">
+
+    <!-- LOGIN GATE (one-time trip code) -->
+    <section id="login-gate" class="hidden">
+      <div class="bg-bg-card rounded-3xl border border-line p-6 mt-8 shadow-sm">
+        <h1 class="text-[28px] font-bold leading-tight mb-2" data-i18n="login_welcome">Welkom, reizigers!</h1>
+        <p class="text-[18px] leading-relaxed text-ink-700 mb-4" data-i18n="login_intro">
+          Voer onze reiscode in. Iedereen in de familie gebruikt dezelfde code, zodat jullie elkaars planning zien.
+        </p>
+        <label class="block text-[18px] font-semibold mb-2" for="trip-code-input" data-i18n="login_code_label">Reiscode</label>
+        <input id="trip-code-input" type="text" autocomplete="off"
+               class="w-full h-14 px-4 rounded-2xl border border-line bg-white text-[22px] font-semibold tracking-wide focus-ring"
+               placeholder="china2026" />
+        <button id="login-btn" class="btn-primary mt-4 w-full h-14 rounded-2xl text-xl font-semibold focus-ring active:scale-[0.98]" data-i18n="login_start">
+          Starten
+        </button>
+        <p class="mt-3 text-sm text-ink-500" data-i18n="login_hint">Tip: de code is <strong>china2026</strong>.</p>
+      </div>
+    </section>
+
+    <!-- SCREEN: HOME -->
+    <section id="screen-home" class="screen">
+      <div class="bg-gradient-to-br from-brand-600 to-brand-700 text-brand-50 rounded-3xl p-6 shadow-lg">
+        <p class="text-[18px] opacity-90" id="home-greeting" data-i18n="home_greeting">Goedemorgen 👋</p>
+        <h1 class="text-4xl font-bold leading-tight mt-1" id="home-day-title">—</h1>
+        <p class="text-[18px] mt-1" id="home-date-city">—</p>
+        <button data-nav="today" class="mt-5 h-14 px-6 rounded-2xl bg-brand-50 text-brand-700 text-xl font-semibold shadow active:scale-[0.98] focus-ring" data-i18n="home_view_day">
+          Bekijk mijn dag →
+        </button>
+      </div>
+
+      <!-- Next activity -->
+      <div class="mt-5 bg-bg-card rounded-2xl border border-line p-5">
+        <h2 class="text-[22px] font-semibold mb-2" data-i18n="home_next">Eerstvolgende stop</h2>
+        <div id="home-next-content"><p class="text-ink-500" data-i18n="home_nothing_planned">Nog niets ingepland.</p></div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="mt-5 grid grid-cols-2 gap-3">
+        <button data-nav="help:taxi" class="h-24 rounded-2xl bg-trust-100 text-trust-700 font-semibold text-[18px] flex flex-col items-center justify-center gap-1 active:scale-[0.98] focus-ring">
+          <span class="text-2xl" aria-hidden="true">🚕</span>
+          <span data-i18n="quick_taxi">Taxi-kaart</span>
+        </button>
+        <button data-nav="help:phrases" class="h-24 rounded-2xl bg-trust-100 text-trust-700 font-semibold text-[18px] flex flex-col items-center justify-center gap-1 active:scale-[0.98] focus-ring">
+          <span class="text-2xl" aria-hidden="true">💬</span>
+          <span data-i18n="quick_phrases">Chinese zinnen</span>
+        </button>
+        <button data-nav="help:emergency" class="h-24 rounded-2xl bg-danger-100 text-danger-700 font-semibold text-[18px] flex flex-col items-center justify-center gap-1 active:scale-[0.98] focus-ring">
+          <span class="text-2xl" aria-hidden="true">🆘</span>
+          <span data-i18n="quick_emergency">Noodgeval</span>
+        </button>
+        <button data-nav="help:scams" class="h-24 rounded-2xl bg-warn-100 text-warn-700 font-semibold text-[18px] flex flex-col items-center justify-center gap-1 active:scale-[0.98] focus-ring">
+          <span class="text-2xl" aria-hidden="true">⚠️</span>
+          <span data-i18n="quick_scams">Pas op!</span>
+        </button>
+      </div>
+
+      <!-- Countdown -->
+      <div class="mt-5 bg-bg-card rounded-2xl border border-line p-5">
+        <h2 class="text-[22px] font-semibold mb-2" data-i18n="home_trip_progress">Reisvoortgang</h2>
+        <div id="home-countdown" class="text-[18px] text-ink-700"></div>
+      </div>
+
+      <!-- Weather (open-meteo, no key) -->
+      <div class="mt-5 bg-bg-card rounded-2xl border border-line p-5">
+        <h2 class="text-[22px] font-semibold mb-2" data-i18n="home_weather">Weer vandaag</h2>
+        <div id="home-weather" class="text-[18px] text-ink-700" data-i18n="home_weather_loading">Bezig met laden…</div>
+      </div>
+    </section>
+
+    <!-- SCREEN: TODAY / PLANNER -->
+    <section id="screen-today" class="screen">
+      <h1 class="text-[28px] font-bold leading-tight mb-3" data-i18n="today_title">Vandaag</h1>
+      <nav class="flex gap-2 overflow-x-auto -mx-4 px-4 pb-2" id="day-tabs" role="tablist" aria-label="Dag-tabbladen"></nav>
+      <p id="day-subtitle" class="text-ink-700 mt-2"></p>
+
+      <div class="mt-4 flex gap-2">
+        <button id="btn-add-item" class="btn-primary flex-1 h-12 rounded-2xl font-semibold focus-ring active:scale-[0.98]" data-i18n="today_add">
+          + Voeg activiteit toe
+        </button>
+      </div>
+
+      <ul id="planner-list" class="mt-4 space-y-3" aria-label="Planning van deze dag"></ul>
+
+      <div class="mt-6 bg-bg-card rounded-2xl border border-line p-5">
+        <h2 class="text-[22px] font-semibold mb-2" data-i18n="today_diary">Dagboekje</h2>
+        <p class="text-[16px] text-ink-700 mb-3" data-i18n="today_diary_hint">Eén zin per dag — jullie reisherinnering.</p>
+        <textarea id="diary-text" class="w-full min-h-[80px] p-3 rounded-xl border border-line bg-white text-[18px] focus-ring" placeholder="Onze hoogtepunt van vandaag..."></textarea>
+        <button id="diary-save" class="mt-2 h-11 px-5 rounded-xl bg-trust-700 text-white font-semibold focus-ring active:scale-[0.98]" data-i18n="today_diary_save">Bewaar</button>
+      </div>
+    </section>
+
+    <!-- SCREEN: EXPLORE -->
+    <section id="screen-explore" class="screen">
+      <h1 class="text-[28px] font-bold leading-tight mb-2" data-i18n="explore_title">Verken</h1>
+      <p class="text-ink-700 mb-3" id="explore-count"></p>
+
+      <div class="relative mb-3">
+        <input id="explore-search" type="search" placeholder="Zoeken…"
+               class="w-full h-12 pl-10 pr-4 rounded-2xl border border-line bg-white text-[18px] focus-ring" />
+        <span class="absolute left-3 top-3 text-ink-500" aria-hidden="true">🔎</span>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mb-3" id="filter-chips" role="group" aria-label="Filters"></div>
+
+      <ul id="explore-list" class="space-y-3" aria-label="Alle locaties"></ul>
+    </section>
+
+    <!-- SCREEN: MAP -->
+    <section id="screen-map" class="screen">
+      <h1 class="text-[28px] font-bold leading-tight mb-2" data-i18n="map_title">Kaart</h1>
+      <div class="flex gap-2 mb-2">
+        <button class="map-city-btn h-10 px-4 rounded-full border border-line bg-bg-card focus-ring" data-city="beijing" data-i18n="map_beijing">Beijing</button>
+        <button class="map-city-btn h-10 px-4 rounded-full border border-line bg-bg-card focus-ring" data-city="xian" data-i18n="map_xian">Xi'an</button>
+        <button class="map-city-btn h-10 px-4 rounded-full border border-line bg-bg-card focus-ring" data-city="all" data-i18n="map_all">Alles</button>
+      </div>
+      <div id="map" class="h-[70vh] rounded-2xl border border-line bg-bg-card" aria-label="Interactieve kaart"></div>
+    </section>
+
+    <!-- SCREEN: HELP -->
+    <section id="screen-help" class="screen">
+      <h1 class="text-[28px] font-bold leading-tight mb-2" data-i18n="help_title">Hulp</h1>
+
+      <!-- Card grid -->
+      <div class="grid gap-3 mt-3">
+        <button data-help-sub="phrases" class="text-left p-5 rounded-2xl bg-bg-card border border-line hover:bg-line/30 focus-ring">
+          <div class="text-2xl mb-1">💬</div>
+          <h2 class="text-[22px] font-semibold" data-i18n="help_phrases_title">Chinese zinnen</h2>
+          <p class="text-[16px] text-ink-700" data-i18n="help_phrases_body">Met knop "hardop lezen" voor de taxichauffeur.</p>
+        </button>
+        <button data-help-sub="taxi" class="text-left p-5 rounded-2xl bg-bg-card border border-line focus-ring">
+          <div class="text-2xl mb-1">🚕</div>
+          <h2 class="text-[22px] font-semibold" data-i18n="help_taxi_title">Taxi-kaart</h2>
+          <p class="text-[16px] text-ink-700" data-i18n="help_taxi_body">Groot Chinees adres om aan de chauffeur te tonen.</p>
+        </button>
+        <button data-help-sub="scams" class="text-left p-5 rounded-2xl bg-warn-100 border border-warn-700/20 focus-ring">
+          <div class="text-2xl mb-1">⚠️</div>
+          <h2 class="text-[22px] font-semibold text-warn-700" data-i18n="help_scams_title">Pas op: de 5 grootste scams</h2>
+          <p class="text-[16px] text-ink-700" data-i18n="help_scams_body">Kort, met wat te doen als het gebeurt.</p>
+        </button>
+        <button data-help-sub="payments" class="text-left p-5 rounded-2xl bg-bg-card border border-line focus-ring">
+          <div class="text-2xl mb-1">💳</div>
+          <h2 class="text-[22px] font-semibold" data-i18n="help_pay_title">Betalen</h2>
+          <p class="text-[16px] text-ink-700" data-i18n="help_pay_body">Alipay & WeChat Pay instellen, Visa/Mastercard koppelen.</p>
+        </button>
+        <button data-help-sub="internet" class="text-left p-5 rounded-2xl bg-bg-card border border-line focus-ring">
+          <div class="text-2xl mb-1">📶</div>
+          <h2 class="text-[22px] font-semibold" data-i18n="help_net_title">Internet & VPN</h2>
+          <p class="text-[16px] text-ink-700" data-i18n="help_net_body">eSIM en VPN om WhatsApp en Google te blijven gebruiken.</p>
+        </button>
+        <button data-help-sub="checklist" class="text-left p-5 rounded-2xl bg-bg-card border border-line focus-ring">
+          <div class="text-2xl mb-1">📋</div>
+          <h2 class="text-[22px] font-semibold" data-i18n="help_check_title">Checklist vóór vertrek</h2>
+          <p class="text-[16px] text-ink-700" data-i18n="help_check_body">Paspoort, visum, eSIM, Alipay, DiDi.</p>
+        </button>
+        <button data-help-sub="emergency" class="text-left p-5 rounded-2xl bg-danger-100 border border-danger-700/30 focus-ring">
+          <div class="text-2xl mb-1">🆘</div>
+          <h2 class="text-[22px] font-semibold text-danger-700" data-i18n="help_em_title">Noodgeval</h2>
+          <p class="text-[16px] text-ink-700" data-i18n="help_em_body">110 politie · 120 ambulance · ambassades.</p>
+        </button>
+        <button data-help-sub="brands" class="text-left p-5 rounded-2xl bg-bg-card border border-line focus-ring">
+          <div class="text-2xl mb-1">🛍️</div>
+          <h2 class="text-[22px] font-semibold" data-i18n="help_brands_title">Chinese merken</h2>
+          <p class="text-[16px] text-ink-700" data-i18n="help_brands_body">Lokale kleding, schoenen & cosmetica (niet-touristy).</p>
+        </button>
+        <button data-help-sub="shoptips" class="text-left p-5 rounded-2xl bg-bg-card border border-line focus-ring">
+          <div class="text-2xl mb-1">💡</div>
+          <h2 class="text-[22px] font-semibold" data-i18n="help_shop_title">Shoppen: slim & veilig</h2>
+          <p class="text-[16px] text-ink-700" data-i18n="help_shop_body">Onderhandelen, scams vermijden, kwaliteit herkennen.</p>
+        </button>
+      </div>
+
+      <div id="help-detail" class="mt-6"></div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM TAB BAR -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 bg-bg-card border-t border-line"
+       style="padding-bottom: env(safe-area-inset-bottom);"
+       role="tablist" aria-label="Hoofdnavigatie">
+    <div class="max-w-2xl mx-auto grid grid-cols-5">
+      <button data-nav="home" class="nav-tab flex flex-col items-center justify-center h-[72px] focus-ring" role="tab">
+        <span class="text-2xl" aria-hidden="true">🏠</span>
+        <span class="text-sm font-semibold mt-1" data-i18n="tab_home">Thuis</span>
+        <span class="tab-underline block h-[3px] w-6 rounded mt-1"></span>
+      </button>
+      <button data-nav="today" class="nav-tab flex flex-col items-center justify-center h-[72px] focus-ring" role="tab">
+        <span class="text-2xl" aria-hidden="true">📅</span>
+        <span class="text-sm font-semibold mt-1" data-i18n="tab_today">Vandaag</span>
+        <span class="tab-underline block h-[3px] w-6 rounded mt-1"></span>
+      </button>
+      <button data-nav="explore" class="nav-tab flex flex-col items-center justify-center h-[72px] focus-ring" role="tab">
+        <span class="text-2xl" aria-hidden="true">🧭</span>
+        <span class="text-sm font-semibold mt-1" data-i18n="tab_explore">Verken</span>
+        <span class="tab-underline block h-[3px] w-6 rounded mt-1"></span>
+      </button>
+      <button data-nav="map" class="nav-tab flex flex-col items-center justify-center h-[72px] focus-ring" role="tab">
+        <span class="text-2xl" aria-hidden="true">🗺️</span>
+        <span class="text-sm font-semibold mt-1" data-i18n="tab_map">Kaart</span>
+        <span class="tab-underline block h-[3px] w-6 rounded mt-1"></span>
+      </button>
+      <button data-nav="help" class="nav-tab flex flex-col items-center justify-center h-[72px] focus-ring" role="tab">
+        <span class="text-2xl" aria-hidden="true">💡</span>
+        <span class="text-sm font-semibold mt-1" data-i18n="tab_help">Hulp</span>
+        <span class="tab-underline block h-[3px] w-6 rounded mt-1"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MODAL: location detail -->
+  <div id="loc-modal" class="fixed inset-0 z-50 hidden bg-black/60 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="loc-modal-title">
+    <div class="max-w-2xl mx-auto min-h-screen flex items-end sm:items-center sm:py-8 sm:px-4">
+      <div class="bg-bg-card w-full sm:rounded-3xl rounded-t-3xl p-5 max-h-[90vh] overflow-y-auto">
+        <button id="loc-modal-close" class="h-10 w-10 rounded-full bg-line/50 text-xl focus-ring float-right" aria-label="Sluiten">✕</button>
+        <div id="loc-modal-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: add to planning -->
+  <div id="add-modal" class="fixed inset-0 z-50 hidden bg-black/60" role="dialog" aria-modal="true" aria-labelledby="add-modal-title">
+    <div class="max-w-2xl mx-auto min-h-screen flex items-end sm:items-center sm:py-8 sm:px-4">
+      <div class="bg-bg-card w-full sm:rounded-3xl rounded-t-3xl p-5">
+        <h2 id="add-modal-title" class="text-[22px] font-semibold mb-3" data-i18n="add_modal_title">Voeg toe aan planning</h2>
+        <div id="add-modal-body"></div>
+        <div class="mt-4 flex gap-2">
+          <button id="add-modal-cancel" class="flex-1 h-12 rounded-2xl bg-line/50 font-semibold focus-ring" data-i18n="cancel">Annuleren</button>
+          <button id="add-modal-confirm" class="flex-1 h-12 rounded-2xl btn-primary font-semibold focus-ring" data-i18n="add_confirm">Toevoegen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast-container" class="fixed bottom-24 inset-x-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
+
+  <!-- Scripts -->
+  <script src="./config.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

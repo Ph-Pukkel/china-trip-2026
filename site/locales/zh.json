@@ -1,0 +1,65 @@
+{
+  "app_title": "中国2026旅行伙伴",
+  "language": "语言",
+  "tab_home": "首页",
+  "tab_today": "今天",
+  "tab_explore": "探索",
+  "tab_map": "地图",
+  "tab_help": "帮助",
+
+  "login_welcome": "欢迎,旅行者!",
+  "login_intro": "请输入我们的旅行代码。全家使用同一代码,可查看同一行程。",
+  "login_code_label": "旅行代码",
+  "login_start": "开始",
+  "login_hint": "提示:代码是 china2026。",
+
+  "home_greeting_morning": "早上好 👋",
+  "home_greeting_afternoon": "下午好 👋",
+  "home_greeting_evening": "晚上好 👋",
+  "home_day_of": "第 {{d}} 天 / 共 {{total}} 天",
+  "home_before_trip": "距离出发还有 {{n}} 天",
+  "home_after_trip": "欢迎回家",
+  "home_trip_progress": "旅行进度",
+  "home_next": "下一站",
+  "home_view_day": "查看今天 →",
+  "home_nothing_planned": "今天没有安排。",
+  "home_weather": "今日天气",
+  "home_weather_loading": "加载中…",
+
+  "quick_taxi": "出租车卡",
+  "quick_phrases": "中文短语",
+  "quick_emergency": "紧急情况",
+  "quick_scams": "小心骗局",
+
+  "today_title": "今天",
+  "today_add": "+ 添加活动",
+  "today_empty": "还没有活动。",
+  "today_diary": "旅行日记",
+  "today_diary_save": "保存",
+  "today_diary_saved": "已保存 ✓",
+
+  "explore_title": "探索",
+  "explore_count": "{{n}} 个地点",
+  "explore_search_ph": "搜索…",
+  "explore_no_results": "没有结果。",
+
+  "map_title": "地图",
+  "map_beijing": "北京",
+  "map_xian": "西安",
+  "map_all": "全部",
+
+  "help_title": "帮助",
+
+  "loc_free": "免费",
+  "loc_closed_today": "⚠ 今日关闭",
+  "loc_price_adult": "成人",
+  "loc_price_senior": "60+",
+  "loc_show_chinese": "给司机看",
+  "loc_add_to_plan": "添加到我的行程",
+  "loc_in_plan": "✓ 已在行程中",
+
+  "add_confirm": "添加",
+  "cancel": "取消",
+
+  "offline_banner": "无网络 — 行程仍可使用,重新联网后自动同步。"
+}
