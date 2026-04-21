@@ -1,5 +1,9 @@
-// service-worker.js — simple offline cache for Reisgenoot China 2026
-const VERSION = "v7-2026-04-21-gallery-euro-es";
+// service-worker.js — Reisgenoot China 2026
+// Strategy: NETWORK-FIRST for same-origin (so translation/photo updates land
+// immediately on refresh), with cache fallback for offline. The previous
+// cache-first strategy caused users to keep seeing old Dutch-only content
+// after deploys.
+const VERSION = "v8-2026-04-21-network-first";
 const CACHE = `china2026-${VERSION}`;
 const APP_SHELL = [
   "./",
@@ -43,17 +47,18 @@ self.addEventListener("fetch", (e) => {
   // only handle GETs
   if (e.request.method !== "GET") return;
 
-  // App shell + same-origin: cache-first, network fallback
+  // Same-origin (app shell, JS, JSON, icons): NETWORK-FIRST, cache as offline fallback.
+  // Updates (new translations, new photos) land on the next refresh instead of being
+  // held back by a stale cache.
   if (url.origin === location.origin) {
     e.respondWith(
-      caches.match(e.request).then((cached) =>
-        cached ||
-        fetch(e.request).then((res) => {
+      fetch(e.request).then((res) => {
+        if (res && res.ok) {
           const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(e.request, copy));
-          return res;
-        }).catch(() => cached)
-      )
+          caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});
+        }
+        return res;
+      }).catch(() => caches.match(e.request))
     );
     return;
   }

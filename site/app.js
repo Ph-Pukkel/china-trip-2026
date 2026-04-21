@@ -1045,6 +1045,14 @@ window.addEventListener("keydown", (e) => {
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+    // When a new service worker takes over, reload once so the page is
+    // rendered with the fresh JS/JSON (fixes users stuck on old cached content).
+    let __swReloaded = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (__swReloaded) return;
+      __swReloaded = true;
+      window.location.reload();
+    });
   }
   setOnline(navigator.onLine);
 })();
