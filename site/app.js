@@ -131,15 +131,28 @@ function renderHome() {
   const titleEl = document.getElementById("home-day-title");
   const dcEl    = document.getElementById("home-date-city");
   const cdEl    = document.getElementById("home-countdown");
+  const barEl   = document.getElementById("home-progress-bar");
+  const pctEl   = document.getElementById("home-progress-pct");
+  const progWrap = document.getElementById("home-progress-wrap");
+
+  // Progress bar: % of the trip we're through. Hide before trip starts.
+  const setProgress = (pct, show) => {
+    if (progWrap) progWrap.style.display = show ? "" : "none";
+    if (barEl) barEl.style.width = `${pct}%`;
+    if (pctEl) pctEl.textContent = `${pct}%`;
+  };
+
   if (td.phase === "before") {
     const daysLeft = Math.ceil((new Date(CFG.TRIP_START) - new Date()) / 86400000);
     titleEl.textContent = t("home_before_trip", { n: daysLeft });
     dcEl.textContent = `${dateFmt(CFG.TRIP_START)} — Xi'an`;
     cdEl.textContent = "";
+    setProgress(0, false);
   } else if (td.phase === "after") {
     titleEl.textContent = t("home_after_trip");
     dcEl.textContent = `${dateFmt(CFG.TRIP_START)} – ${dateFmt(CFG.TRIP_END)}`;
     cdEl.textContent = "";
+    setProgress(100, true);
   } else {
     const day = CFG.DAYS[td.index];
     titleEl.textContent = t("home_day_of", { d: td.index + 1, total: CFG.DAYS.length });
@@ -147,6 +160,8 @@ function renderHome() {
     const remaining = CFG.DAYS.length - (td.index + 1);
     const rKey = remaining === 1 ? "home_day_remaining_one" : "home_day_remaining_other";
     cdEl.textContent = `${t("home_day_of", { d: td.index + 1, total: CFG.DAYS.length })} · ${t(rKey, { n: remaining })}`;
+    const pct = Math.round(((td.index + 1) / CFG.DAYS.length) * 100);
+    setProgress(pct, true);
   }
 
   renderNextActivity();
@@ -180,7 +195,7 @@ function renderNextActivity() {
       <div class="text-ink-700">${fmtTime(next.start_time)} · ${escapeHtml(dateFmt(next.day))}</div>
       ${loc ? `<div class="text-ink-500 text-sm">${escapeHtml(locText(loc, "address") || loc.address_nl || "")}</div>` : ""}
       <div class="flex gap-2 mt-2">
-        ${loc ? `<button class="h-12 px-4 rounded-xl bg-trust-100 text-trust-700 font-semibold" data-action="show-chinese" data-slug="${loc.slug}">🚕 ${t("loc_show_chinese")}</button>` : ""}
+        ${loc ? `<button class="inline-flex items-center gap-2 h-12 px-4 rounded-xl bg-trust-100 text-trust-700 font-semibold" data-action="show-chinese" data-slug="${loc.slug}"><svg class="ds-icon" style="width:18px;height:18px" aria-hidden="true"><use href="#i-taxi"/></svg>${t("loc_show_chinese")}</button>` : ""}
         <button class="h-12 px-4 rounded-xl btn-primary font-semibold" data-nav="today">${t("home_view_day")}</button>
       </div>
     </div>`;
