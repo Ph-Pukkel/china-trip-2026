@@ -112,7 +112,8 @@
       "warnings_nl": [
         "13,74 km is te ver om helemaal te lopen; fietsen of een traject van ca. 1-2 km is voldoende.",
         "Weinig schaduw bovenop de muur — zonhoed in april raadzaam.",
-        "Trappen op de muur zijn steil; sommige poorten hebben lift."
+        "Trappen op de muur zijn steil; sommige poorten hebben lift.",
+        "Labor Day 2026: extreem druk; online reserveren aanbevolen om crowd-control-quota niet te verliezen."
       ],
       "source_urls": [
         "https://www.travelchinaguide.com/attraction/shaanxi/xian/citywall.htm",
@@ -791,7 +792,8 @@
         "Ideaal voor regen- of hete dagen: grotendeels overdekt.",
         "Koppel met een bezoek aan Daming Palace (beide oost van stad) voor efficiënte route.",
         "Simulatiehut 'neolithisch dorp' bij uitgang leuk voor kinderen.",
-        "65+ zeker gratis; 60-64 vaak half-prijs, verifieer ter plaatse."
+        "65+ zeker gratis; 60-64 vaak half-prijs, verifieer ter plaatse.",
+        "65+ zeker gratis met paspoort; 60-64 eventueel halfprijs (verifieer bij kassa)."
       ],
       "warnings_nl": [
         "Matige Engelse uitleg; audiogids aanbevolen.",
@@ -1038,7 +1040,7 @@
       "lat": 34.2467,
       "lng": 108.9753,
       "nearest_metro": "Metro Lijn 6 Jiaotong Daxue · Xingqinggong (交通大学·兴庆宫) Station",
-      "opening_hours": "mrt-apr 06:00-19:30; mei-aug 05:30-20:00 (gratis)",
+      "opening_hours": "mrt-apr 06:00-19:30; mei-aug 05:30-20:00",
       "closed_days": [],
       "seasonal_notes": "April: vroege kerselaars uitgebloeid, maar seringen, tulpen en peonies in bloei — heerlijk om te wandelen.",
       "price_adult_cny": 0,
@@ -1765,7 +1767,7 @@
       "lat": 34.2494,
       "lng": 108.9419,
       "nearest_metro": "Metro Lijn 2 Yongningmen Station, uitgang B of C",
-      "opening_hours": "Di-zo: daytime mini-shows 10:00/11:00/15:00/16:00; welkomstceremonie 08:30/09:00; avond Tang ceremony 20:30-21:00. Ma meestal gesloten/aangepast.",
+      "opening_hours": "Avond-ceremonie 20:30; welkomstceremonie overdag 08:30/09:00; daytime mini-performances 10:00/11:00/15:00/16:00",
       "closed_days": [
         "monday"
       ],
@@ -2371,9 +2373,11 @@
       "lat": 39.9254,
       "lng": 116.3889,
       "nearest_metro": "Beihai North (Lijn 6) — noordpoort; Tian'anmen West (Lijn 1) ±15 min lopen naar zuidpoort",
-      "opening_hours": "peak (apr-okt) 06:00-21:00, kassa sluit 20:30",
+      "opening_hours": {
+        "peak_season_apr_oct": "06:00-21:00, kassa sluit 20:30"
+      },
       "closed_days": [],
-      "seasonal_notes": "Park-entree peak 10 CNY; combi-ticket (park + Yong'an tempel + Witte Pagode + Tuancheng) 20 CNY; Qionghua-eiland apart 10 CNY. 60+ gratis met paspoort.",
+      "seasonal_notes": "Park-entree peak 10 CNY (low 5 CNY); combi-ticket CNY 20 inclusief Yong'an tempel, White Dagoba en Tuancheng; Qionghua-eiland apart CNY 10. 60+ gratis met paspoort.",
       "price_adult_cny": 20,
       "price_senior_cny": 0,
       "price_child_cny": 0,
@@ -3060,7 +3064,7 @@
       "lat": 40.3587,
       "lng": 116.0243,
       "nearest_metro": "geen direct; hogesnelheidstrein vanaf Qinghe Railway Station (metro Lijn 13 of Changping Lijn) naar Badaling Great Wall Station (20 min, CNY 16-28 2e klas)",
-      "opening_hours": "Hoogseizoen (1 apr – 31 okt): 06:30–17:30 (laatste entree 16:30); laagseizoen (1 nov – 31 mrt): 07:30–16:30 (laatste entree 15:30)",
+      "opening_hours": "06:30-16:30 (laatste toegang)",
       "closed_days": [],
       "seasonal_notes": "April 2026 = hoogseizoen en vlak voor Golden Week. 29 april – 3 mei Labour Day-periode = MASSA (tot 65.000 pp/dag, toegangsplafond). S2-trein via Huangtudian is NIET operationeel in 2026 (opgeschort voor werkzaamheden 2025–2027). Gebruik hogesnelheidstrein vanaf Qinghe.",
       "price_adult_cny": 40,
@@ -3896,7 +3900,7 @@
       "nearest_metro": "Muxidi (lijn 1), uitgang C; of Junshi Bowuguan (lijn 9)",
       "opening_hours": "06:00–21:30 (apr-okt)",
       "closed_days": [],
-      "seasonal_notes": "Kersenbloesem-festival eind maart tot ca. 20 april — WAARSCHIJNLIJK NET VOORBIJ tijdens onze reis. Controleer bij aankomst. Peonies vanaf ca. 5 mei.",
+      "seasonal_notes": "Kersenbloesem-festival eind maart tot ca. 20 april — WAARSCHIJNLIJK NET VOORBIJ tijdens onze reis. Controleer bij aankomst. Peonies vanaf ca. 5 mei. | 2026 sakura-piek ca. 25 mrt-15 apr; reisperiode eind apr mist piek. Senior 65+ gratis (60-65 soms halfprijs).",
       "price_adult_cny": 2,
       "price_senior_cny": 0,
       "price_child_cny": 1,
@@ -4506,7 +4510,8 @@
         "Top-locatie tussen Bell & Drum Tower — combineer met avondwandeling.",
         "Probeer naast paomo ook de koude voorgerechten (lams-tong, komkommer met knoflook).",
         "Halal — geen varken, geen alcohol.",
-        "Cash of mobile QR (WeChat/Alipay)."
+        "Cash of mobile QR (WeChat/Alipay).",
+        "Labor Day 2026: zeer druk; reserveren via Dianping sterk aanbevolen."
       ],
       "warnings_nl": "Toeristisch en dus iets duurder dan lokale paomo-zaakjes, maar kwaliteit en hygiëne verantwoorden dat — zeker voor een eerste bezoek aan China.",
       "source_urls": [
@@ -5214,7 +5219,8 @@
       "warnings_nl": [
         "Dit is géén culinair highlight — beschouw het als Chinatown-spektakel voor de foto's. Hygiëne variabel; eet enkel vers-gegrild. Zakkenrollers actief.",
         "KRITISCH: traditionele snack-foodstalls grotendeels verdwenen sinds 2016-2019; het is nu meer een cultuursteeg met souvenirs dan street-food. Beter alternatief: Huguosi Snack Street of Gui Jie.",
-        "KRITISCH: Donghuamen Yeshi (de beroemde 'exotic snack' straat) is sinds 2016 permanent gesloten. Wangfujing Xiaochi Jie is na renovatie 2018-19 grotendeels verdwenen — verwacht geen volwaardige street-food belevenis. Alternatieven: Nanluoguxiang, Dashilan, of Houhai-bars."
+        "KRITISCH: Donghuamen Yeshi (de beroemde 'exotic snack' straat) is sinds 2016 permanent gesloten. Wangfujing Xiaochi Jie is na renovatie 2018-19 grotendeels verdwenen — verwacht geen volwaardige street-food belevenis. Alternatieven: Nanluoguxiang, Dashilan, of Houhai-bars.",
+        "KRITISCH: traditionele snack-straat is grotendeels verdwenen sinds ca. 2016-2019; foodstalls zijn verplaatst naar Gui Jie en Xianyukou. Huidige straat heeft meer culturele souvenirs dan food. Alternatief: Huguosi Snack Street of Gui Jie."
       ],
       "source_urls": [
         "https://www.travelchinaguide.com/cityguides/beijing/wangfujing-snack-street.htm",
@@ -5450,7 +5456,7 @@
       "booking_required": false,
       "booking_url": null,
       "duration_min": 120,
-      "tips_nl": "Thee proeven is vrijwel gratis - voel je niet verplicht te kopen, maar als je wel een paar thee-kadootjes wil: 100 gr goede longjing of tie guan yin rond 80-150 RMB is reeel. Voor kalligrafie en 'antiek': voorzichtig onderhandelen, 20-40% korting komt voor.",
+      "tips_nl": "Thee proeven is vrijwel gratis - voel je niet verplicht te kopen, maar als je wel een paar thee-kadootjes wil: 100 gr goede longjing of tie guan yin rond 80-150 RMB is reeel. Voor kalligrafie en 'antiek': voorzichtig onderhandelen, 20-40% korting komt voor. | Museum van Tang West Market: maandag gesloten, 09:00-17:30 apr-okt (apart van shopping-complex).",
       "warnings_nl": "Veel 'antieke' stukken zijn eigenlijk reproducties - oke als decoratie, niet als investering. Zijde-kwaliteit verschilt enorm; alleen 100% mulberry-zijde is echte zijde.",
       "source_urls": [
         "https://www.chinahighlights.com/xian/attraction/tang-west-market.htm",
@@ -5504,7 +5510,7 @@
       "booking_url": null,
       "duration_min": 90,
       "tips_nl": "Begin met 30-40% van de vraagprijs bij het afdingen. Rustigere, vaak goedkopere zijstraten: Xiyangshi en Damaishi. Een setje van 3 mini terracotta-krijgers hoort rond 40-80 RMB te kosten. Bankjes bij het Drum Tower-plein om uit te rusten.",
-      "warnings_nl": "Bij walnoot-snoep (hutao su) laten sommige verkopers je eerst proeven en wegen dan een groot stuk af: vraag altijd vooraf de prijs per jin (500 gr). De drukte kan tussen 19-21 uur intens zijn voor oma/opa - eerder op de avond is comfortabeler.",
+      "warnings_nl": "Bij walnoot-snoep (hutao su) laten sommige verkopers je eerst proeven en wegen dan een groot stuk af: vraag altijd vooraf de prijs per jin (500 gr). De drukte kan tussen 19-21 uur intens zijn voor oma/opa - eerder op de avond is comfortabeler. | Labor Day 2026: extreem druk, mogelijk crowd-control in Huimin Jie.",
       "source_urls": [
         "https://www.chinahighlights.com/xian/muslim-quarter.htm",
         "https://www.travelchinaguide.com/cityguides/shaanxi/xian/muslim-quarter.htm",
@@ -5609,7 +5615,7 @@
       "lat": 34.2401,
       "lng": 108.9479,
       "nearest_metro": "Lijn 2 - Xiaozhai Station, 10 min lopen",
-      "opening_hours": "Banket 18:00-19:30; Show 19:30-20:35 (soms 20:30-21:50 in hoogseizoen)",
+      "opening_hours": "Banket 18:00-19:30, Show 19:30-20:35 (soms 20:30-21:50 in hoogseizoen)",
       "closed_days": [],
       "seasonal_notes": "April is high season - boek minimaal 2 weken vooraf, zeker rond Labour Day.",
       "price_adult_cny": 320,
@@ -5652,7 +5658,7 @@
       "lat": 34.2228,
       "lng": 108.9596,
       "nearest_metro": "Lijn 3/4 - Dayanta Station",
-      "opening_hours": "Dagelijkse fonteinshow primair 21:00; overdag ook ca. 12:00 en 16:00; dinsdag afwijkend (19:00/21:00). Verifieer dagelijks ter plaatse — schema wisselt per seizoen.",
+      "opening_hours": "Dinsdag 19:00/21:00; overige dagen 12:00, 16:00, 19:00, 21:00 (verifieer officiële tijden ter plekke)",
       "closed_days": [],
       "seasonal_notes": "April-oktober: alle shows. Winter (nov-mrt) soms alleen weekendshow i.v.m. vorst.",
       "price_adult_cny": 0,
@@ -5706,7 +5712,7 @@
         "Senior-korting (60+): 50% met paspoort. Kinderen onder 1.40m gratis. Huur een elektrische fiets of golfkar als je 70+ bent en meer dan 1 km wil afleggen. Ceremoniewisseling bij South Gate 21:30 (indien doorgaat). Mooiste views: tussen South Gate en East Gate.",
         "70+ altijd gratis; 65-69 halfprijs (CNY 27) op vertoon paspoort."
       ],
-      "warnings_nl": "Stenen ongelijk - goede schoenen. Bij regen glad. Laatste trein 22:00-22:30 afhankelijk van lijn.",
+      "warnings_nl": "Stenen ongelijk - goede schoenen. Bij regen glad. Laatste trein 22:00-22:30 afhankelijk van lijn. | Senior-korting: 70+ gratis, 65-69 halfprijs (ca. CNY 27); paspoort verplicht bij balie.",
       "source_urls": [
         "https://www.chinahighlights.com/xian/attraction/city-wall.htm",
         "https://www.travelchinaguide.com/attraction/shaanxi/xian/city-wall.htm"
@@ -5930,7 +5936,9 @@
       "nearest_metro": "Lijn 2 - Qianmen Station",
       "opening_hours": "Winkels 10:00-22:00",
       "closed_days": [],
-      "seasonal_notes": null,
+      "seasonal_notes": [
+        "Tram (dingding) kan op werkdagen in off-season beperkt zijn — verifieer ter plaatse."
+      ],
       "price_adult_cny": null,
       "price_senior_cny": null,
       "price_child_cny": null,
@@ -6012,7 +6020,7 @@
       "lat": 39.8935,
       "lng": 116.3917,
       "nearest_metro": "Lijn 2 - Qianmen of Lijn 7 - Hepingmen",
-      "opening_hours": "10:00-19:00 (winkels sluiten vroeger dan elders)",
+      "opening_hours": "Dashilan 10:00-20:30; Liulichang 09:30-18:00",
       "closed_days": [],
       "seasonal_notes": null,
       "price_adult_cny": null,
@@ -6055,7 +6063,7 @@
       "lat": 39.8834,
       "lng": 116.416,
       "nearest_metro": "Lijn 5 - Tiantan Dongmen Station, 5 min lopen",
-      "opening_hours": "dagelijks 09:30-19:00",
+      "opening_hours": "09:30-19:00",
       "closed_days": [],
       "seasonal_notes": null,
       "price_adult_cny": null,
@@ -6105,7 +6113,7 @@
         "design"
       ],
       "description_nl": "Al jaren een van de meest verkopende luxury malls ter wereld - een complex met 6 verdiepingen vol internationale luxe en een spectaculaire 'SKP-S' futuristische zijvleugel met kunstinstallaties (gratis te bezichtigen). Zelfs als je niets koopt is een uurtje rondkijken echt een belevenis. Food court op verdieping 6 is excellent.",
-      "address_nl": "87 Jianguo Road, Chaoyang District, Beijing",
+      "address_nl": "87 or 97 Jianguo Road (hoofdingang), Chaoyang District, Beijing",
       "address_zh": "北京市朝阳区建国路87号",
       "lat": 39.9081,
       "lng": 116.4664,
@@ -6169,7 +6177,7 @@
       "lat": 39.9466,
       "lng": 116.4736,
       "nearest_metro": "Lijn 14 - Zaoying Station, 15 min lopen, of Didi/taxi",
-      "opening_hours": "ma-do 11:00-21:30; vr-zo 11:00-22:00",
+      "opening_hours": "Ma-do 11:00-21:30; vr-zo 11:00-22:00",
       "closed_days": [],
       "seasonal_notes": "April is perfect voor outdoor-terrasjes",
       "price_adult_cny": null,
@@ -6254,7 +6262,7 @@
       "lat": 39.9401,
       "lng": 116.464,
       "nearest_metro": "Lijn 10 - Hujialou Station, 10 min lopen",
-      "opening_hours": "Shows 17:15 en 19:30 dagelijks",
+      "opening_hours": "Twee shows per dag; tijdens de reisweek meestal 17:00 en 19:30 (verifieer via ticketkanaal)",
       "closed_days": [],
       "seasonal_notes": null,
       "price_adult_cny": 280,
@@ -6296,7 +6304,7 @@
       "lat": 39.8873,
       "lng": 116.3929,
       "nearest_metro": "Lijn 7 - Hufangqiao Station",
-      "opening_hours": "Show dagelijks 19:30-20:45 tijdens piekseizoen; in off-season (stillere maanden) soms alleen wo-za. Verifieer actuele datum op liyuan-theatre.com voor jouw reisweek. Eind april valt in piekseizoen dus dagelijks programma verwacht.",
+      "opening_hours": "19:30-20:45",
       "closed_days": [],
       "seasonal_notes": "In 2026 dagelijkse voorstellingen in piekseizoen (apr-okt); tickets via online-kanalen tot 3 uur voor show met korting verkrijgbaar. Check specifieke datum voordat je tickets reserveert.",
       "price_adult_cny": 280,
@@ -6551,7 +6559,7 @@
       "lat": 39.9334,
       "lng": 116.4483,
       "nearest_metro": "Lijn 10 - Tuanjiehu of Dongsishitiao",
-      "opening_hours": "11:00-01:00 (laatste boeking rond 23:30)",
+      "opening_hours": "12:00-02:00 (laatste boeking ca. 00:30)",
       "closed_days": [],
       "seasonal_notes": null,
       "price_adult_cny": 220,
@@ -6764,9 +6772,9 @@
       "closed_days": [],
       "seasonal_notes": "Eind april: zonsondergang rond 19:20-19:30. Lantaarns gaan aan rond 19:00. Check lokale zonsondergangtijd voor exact moment.",
       "price_adult_cny": 54,
-      "price_senior_cny": 27,
+      "price_senior_cny": 0,
       "price_child_cny": 27,
-      "booking_required": false,
+      "booking_required": true,
       "booking_url": null,
       "duration_min": 90,
       "tips_nl": "Beste compositie 1: vanaf het zuidelijke plein over de gracht richting poort (brugreflectie in water). Compositie 2: vanop de muur naar west of oost kijken over de kantelen — ga 1 uur voor zonsondergang naar boven. Senior-tip: bij Yongningmen is er een lift (niet altijd bemand — vraag personeel).",
@@ -6803,7 +6811,7 @@
       "nearest_metro": "Lijn 3, Qinglongsi (uitgang C, 5 min lopen)",
       "opening_hours": "08:00-17:30 (park deels 24 uur)",
       "closed_days": [],
-      "seasonal_notes": "Kersenbloesem-seizoen (15 mrt - 15 apr): CNY 10-16 entree. Onze reis 25 apr - 2 mei valt erna: normaal gratis. Reservering soms vereist via Meituan.",
+      "seasonal_notes": "Kersenbloesem-seizoen (15 mrt - 15 apr): CNY 10-16 entree. Onze reis 25 apr - 2 mei valt erna: normaal gratis. Reservering soms vereist via Meituan. | Tijdens kerselaarseizoen (15 mrt - 15 apr) entree CNY 10-16; reisperiode 25 apr - 2 mei valt na piek → gratis.",
       "price_adult_cny": 0,
       "price_senior_cny": 0,
       "price_child_cny": 0,
@@ -6934,7 +6942,7 @@
       "booking_url": "https://www.xaskg.org.cn/",
       "duration_min": 120,
       "tips_nl": "Reserveer online met paspoortnummer (WeChat mini-program of website). Senioren 60+ gratis op vertoon paspoort. Goed alternatief bij regenweer of te warme middag.",
-      "warnings_nl": "Ligt ca. 12 km van binnenstad — reken 30 min taxi of 40 min metro. Groot gebouw met veel lopen; liften aanwezig.",
+      "warnings_nl": "Ligt ca. 12 km van binnenstad — reken 30 min taxi of 40 min metro. Groot gebouw met veel lopen; liften aanwezig. | Prijs CNY 30 is onzeker — veel Chinese wetenschapsmusea zijn gratis; confirmeer ter plaatse.",
       "source_urls": [
         "https://www.xaskg.org.cn/",
         "https://www.chinatravel.com/xian-attractions/xi-an-science-and-technology-museum"
@@ -6976,7 +6984,8 @@
       "duration_min": 60,
       "tips_nl": [
         "Plan je bezoek rond een shadow-puppet voorstelling (meestal 11:00, 14:00, 16:00, 20:00 — vraag bij de kassa). Fotocompositie: de derde binnenplaats met granaatappelboom is iconisch bij zonlicht rond 11:00.",
-        "Schaduwpoppenspel elk uur van 10:00-22:00 (15 min)."
+        "Schaduwpoppenspel elk uur van 10:00-22:00 (15 min).",
+        "Shadow puppet show elk uur 10:00-22:00 (15 min); JSON-tijden 11:00/14:00/16:00/20:00 zijn te beperkt."
       ],
       "warnings_nl": "Wel veel hoge drempels tussen de binnenplaatsen (tot 25 cm). Senior heeft mogelijk hulp nodig. Het pand is verder vlak.",
       "source_urls": [
@@ -7137,7 +7146,7 @@
       "lat": 39.9237,
       "lng": 116.3975,
       "nearest_metro": "Lijn 8, Nanluoguxiang (15 min lopen); of taxi tot zuidingang",
-      "opening_hours": "peak (apr-okt) 06:00-21:00; laatste entree 20:30",
+      "opening_hours": "06:00-21:00 (apr-okt); laatste entree 20:30",
       "closed_days": [],
       "seasonal_notes": "Eind april: peonies (pioenrozen) in volle bloei in Jingshan-rozentuin — perfect moment. Zonsopkomst rond 05:35 (let op: park opent pas 06:30, dus zonsopkomst-foto's niet mogelijk vanaf binnen het park!). Eerste licht op Verboden Stad dakgoud vanaf ca. 07:00.",
       "price_adult_cny": 2,
@@ -7180,7 +7189,7 @@
       "nearest_metro": "Lijn 9, Muxidi (oostelijke ingang, 10 min lopen)",
       "opening_hours": "06:00-20:30 (tijdens sakura-festival verlengd)",
       "closed_days": [],
-      "seasonal_notes": "Kersenbloesem-festival 2026: 19 mrt - 15 mei. Tijdens festival is het ticket CNY 10 (normaal 2). Piek 30 mrt - 20 apr; late variëteiten (Kanzan) tot eind april. Reisperiode 25 apr - 2 mei VALT binnen festival.",
+      "seasonal_notes": "Festival loopt 19 mrt - 15 mei 2026; tijdens reisperiode TICKET CNY 10. Kersenbloesempiek 30 mrt - 20 apr (late variëteiten Kanzan tot eind april).",
       "price_adult_cny": 10,
       "price_senior_cny": 5,
       "price_child_cny": 0,
@@ -7219,7 +7228,7 @@
       "lat": 39.9265,
       "lng": 116.3872,
       "nearest_metro": "Lijn 6, Beihai North (uitgang B, direct)",
-      "opening_hours": "peak (apr-okt) 06:00-21:00",
+      "opening_hours": "06:00-21:00 (apr-okt)",
       "closed_days": [],
       "seasonal_notes": "Eind april: treurwilgen in fel groen, witte pagode contrast perfect. Zonsondergang rond 19:00.",
       "price_adult_cny": 10,
@@ -7341,7 +7350,7 @@
       "lat": 39.9416,
       "lng": 116.3345,
       "nearest_metro": "Lijn 4, Beijing Zoo (uitgang B, 10 min lopen tot aquarium-ingang)",
-      "opening_hours": "09:00-17:30 (laatste entree 16:30)",
+      "opening_hours": "09:00-17:30 peak apr-okt (laatste entree 17:00); low: 09:00-17:00 (laatste 16:30)",
       "closed_days": [],
       "seasonal_notes": "Geen seizoensafhankelijkheid; perfect reserveplan bij slecht weer.",
       "price_adult_cny": 175,
@@ -7350,7 +7359,7 @@
       "booking_required": true,
       "booking_url": "https://www.bj-sea.com/",
       "duration_min": 180,
-      "tips_nl": "Reserveer online (paspoortnummer vereist). Doorgaans aparte ingang voor aquarium binnen de dierentuin — vraag 'hǎiyángguǎn ménkǒu' (海洋馆门口). Senioren 60+ 50% korting. Ga voor shows (11:00, 14:00, 16:00).",
+      "tips_nl": "Reserveer online (paspoortnummer vereist). Doorgaans aparte ingang voor aquarium binnen de dierentuin — vraag 'hǎiyángguǎn ménkǒu' (海洋馆门口). Senioren 60+ 50% korting. Ga voor shows (11:00, 14:00, 16:00). | Aparte entree voor zoo vereist (CNY 15 peak, 60+ gratis met paspoort).",
       "warnings_nl": "Grote indoor ruimte met veel trappen tussen niveaus — liften aanwezig maar soms druk. Plan 3 uur.",
       "source_urls": [
         "https://www.bj-sea.com/",
@@ -7423,7 +7432,7 @@
       "lat": 40.6767,
       "lng": 117.1908,
       "nearest_metro": "Geen metro. Directe shuttlebus vanaf Dongzhimen-busstation of Wangjing ca. 08:00, terug ca. 16:30.",
-      "opening_hours": "09:00-22:30 (waterdorp); Simatai Great Wall overdag, verlichting 's avonds tot 22:00",
+      "opening_hours": "Ticketing 09:00-21:00; waterdorp open tot 22:30",
       "closed_days": [],
       "seasonal_notes": "Eind april: ideale temperatuur (15-22 °C), perzikbloesem nog mogelijk, geen drukte van zomer.",
       "price_adult_cny": 150,
@@ -7464,7 +7473,7 @@
       "lat": 39.8884,
       "lng": 116.3903,
       "nearest_metro": "Lijn 7, Hufangqiao (uitgang B, 5 min lopen)",
-      "opening_hours": "Workshops op aanvraag, meestal 14:00 en 16:00; voorstellingen 19:30-20:40",
+      "opening_hours": "show 19:30-20:45",
       "closed_days": [],
       "seasonal_notes": "Geen seizoensafhankelijkheid.",
       "price_adult_cny": 180,
@@ -7760,7 +7769,7 @@
       "lat": 34.2627,
       "lng": 108.9464,
       "nearest_metro": "Lijn 2 - Zhonglou (Bell Tower), directe uitgang",
-      "opening_hours": "zomer (1 apr-30 sep) 09:30-22:00; winter (1 okt-31 mrt) 09:30-21:00",
+      "opening_hours": "zomer 09:30-22:00 / winter 09:30-21:00",
       "closed_days": [],
       "price_range": "$$-$$$",
       "tips_nl": "Handige pauzeplek midden in de oude stad. Supermarket Ole' in het souterrain is goed voor Chinese lekkernijen om mee te nemen (losse thee, snacks, gedroogd fruit).",

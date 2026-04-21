@@ -1,0 +1,409 @@
+{
+  "generated_at": "2026-04-21",
+  "reviewer": "Claude extraction agent (batches 1+4)",
+  "scope": "items 1-43 and 127-169",
+  "patches": [
+    {
+      "slug": "798-art-zone",
+      "field": "closed_days",
+      "old_value": ["monday", "tuesday"],
+      "new_value": ["monday"],
+      "reason": "District is 24/7 toegankelijk; individuele galerieën overwegend gesloten op maandag; Tuesday-sluiting is niet algemeen"
+    },
+    {
+      "slug": "badaling-great-wall",
+      "field": "opening_hours",
+      "old_value": "06:30-16:00 laatste toegang",
+      "new_value": "06:30-16:30 (laatste toegang)",
+      "reason": "officiële Beijing gov bevestigt peak hours 06:30-16:30 (laatste toegang 16:30, DB zei 16:00)",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/ticketing/attractions/202407/t20240717_3751609.html",
+        "https://www.travelchinaguide.com/badaling-great-wall-tickets-booking.htm"
+      ]
+    },
+    {
+      "slug": "banpo-museum",
+      "field": "booking_required",
+      "old_value": true,
+      "new_value": false,
+      "reason": "Reservering kan online via officiële WeChat, maar walk-up ook mogelijk — aanbevolen, niet verplicht"
+    },
+    {
+      "slug": "banpo-museum",
+      "field": "tips_nl",
+      "append_value": "65+ zeker gratis met paspoort; 60-64 eventueel halfprijs (verifieer bij kassa).",
+      "reason": "verduidelijking senior-korting per leeftijdscategorie"
+    },
+    {
+      "slug": "beihai-park",
+      "field": "opening_hours",
+      "old_value": {"peak_season_apr_oct": "06:30-21:00"},
+      "new_value": {"peak_season_apr_oct": "06:00-21:00, kassa sluit 20:30"},
+      "reason": "officiële Beijing gov geeft peak 06:00-21:00 (ticketkassa sluit 20:30); DB zei 06:30-21:00",
+      "sources": [
+        "https://english.beijing.gov.cn",
+        "https://www.travelchinaguide.com/beihai-park-tickets-booking.htm"
+      ]
+    },
+    {
+      "slug": "beihai-park",
+      "field": "seasonal_notes",
+      "old_value": "Park-entree peak 10 CNY (low 5 CNY); Qionghua-eiland/Witte Pagode ±10 CNY extra",
+      "new_value": "Park-entree peak 10 CNY (low 5 CNY); combi-ticket CNY 20 inclusief Yong'an tempel, White Dagoba en Tuancheng; Qionghua-eiland apart CNY 10. 60+ gratis met paspoort.",
+      "reason": "DB zet 20 CNY als price_adult_cny maar bedoelt combi; los park is 10 CNY"
+    },
+    {
+      "slug": "beijing-aquarium-zoo",
+      "field": "opening_hours",
+      "old_value": "09:00-17:30 (laatste entree 16:30)",
+      "new_value": "09:00-17:30 peak apr-okt (laatste entree 17:00); low: 09:00-17:00 (laatste 16:30)",
+      "reason": "seizoensgebonden uren volgens Trip.com en travelchinaguide"
+    },
+    {
+      "slug": "beijing-aquarium-zoo",
+      "field": "tips_nl",
+      "append_value": "Aparte entree voor zoo vereist (CNY 15 peak, 60+ gratis met paspoort).",
+      "reason": "aquarium ligt binnen de zoo — zoo-entree apart te betalen"
+    },
+    {
+      "slug": "beijing-beihai-white-pagoda-hidden-angle",
+      "field": "opening_hours",
+      "old_value": "06:30-20:00",
+      "new_value": "06:00-21:00 (apr-okt)",
+      "reason": "park opent 06:00 peak (apr-okt), DB zei 06:30",
+      "sources": [
+        "https://english.beijing.gov.cn",
+        "https://www.travelchinaguide.com/attraction/beijing/beihai.htm"
+      ]
+    },
+    {
+      "slug": "beijing-beihai-white-pagoda-hidden-angle",
+      "field": "price_senior_cny",
+      "old_value": 5,
+      "new_value": 0,
+      "reason": "60+ is gratis met paspoort; DB's 5 CNY is onjuist"
+    },
+    {
+      "slug": "beijing-chaoyang-acrobatics",
+      "field": "opening_hours",
+      "old_value": "Shows 17:15 en 19:30 dagelijks",
+      "new_value": "Twee shows per dag; tijdens de reisweek meestal 17:00 en 19:30 (verifieer via ticketkanaal)",
+      "reason": "officiële chaoyangtheatre.com geeft andere tijden; inconsistent tussen kanalen — verifieer per datum",
+      "sources": [
+        "https://chaoyangtheatre.com/",
+        "https://www.trip.com/travel-guide/attraction/beijing/chaoyang-theatre-acrobatic-show-10548442/"
+      ]
+    },
+    {
+      "slug": "beijing-dashilan-liulichang",
+      "field": "opening_hours",
+      "old_value": "10:00-19:00",
+      "new_value": "Dashilan 10:00-20:30; Liulichang 09:30-18:00",
+      "reason": "precisie voor twee aparte straten; DB-uren zijn aan de krappe kant"
+    },
+    {
+      "slug": "beijing-foot-massage-tcm",
+      "field": "opening_hours",
+      "old_value": "11:00-01:00",
+      "new_value": "12:00-02:00 (laatste boeking ca. 00:30)",
+      "reason": "Liangzi geopend typisch 12:00-02:00, iets later dan DB"
+    },
+    {
+      "slug": "beijing-gubei-water-town",
+      "field": "opening_hours",
+      "old_value": "09:00-22:30",
+      "new_value": "Ticketing 09:00-21:00; waterdorp open tot 22:30",
+      "reason": "algemene opening klopt maar ticketbalie sluit 21:00; verduidelijking"
+    },
+    {
+      "slug": "beijing-hongqiao-pearl-market",
+      "field": "opening_hours",
+      "old_value": "08:30-19:00",
+      "new_value": "09:30-19:00",
+      "reason": "meerdere bronnen bevestigen 09:30-19:00 (niet 08:30)",
+      "sources": [
+        "https://www.travelchinaguide.com/cityguides/beijing/shopping/hongqiao-market/",
+        "https://www.eastchinatrip.com/hongqiao-pearl-market-beijing-shopping-guide/"
+      ]
+    },
+    {
+      "slug": "beijing-jingshan-sunrise",
+      "field": "opening_hours",
+      "old_value": "06:30-21:00 (april-oktober); kassa vanaf 06:00",
+      "new_value": "06:00-21:00 (apr-okt); laatste entree 20:30",
+      "reason": "officiële Beijing gov bevestigt peak (1 apr-31 okt): park 06:00-21:00, laatste entree 20:30",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/parktours/guidevisitors/jingshanpark/",
+        "https://english.beijing.gov.cn/specials/ticketing/parks/202407/t20240719_3753324.html"
+      ]
+    },
+    {
+      "slug": "beijing-juyongguan-great-wall",
+      "field": "price_adult_cny",
+      "old_value": 45,
+      "new_value": 40,
+      "reason": "officiële gov: peak (apr-okt) adult CNY 40, off-peak CNY 35",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/ticketing/attractions/202407/t20240717_3751596.html",
+        "https://www.travelchinaguide.com/juyongguan-great-wall-tickets-booking.htm"
+      ]
+    },
+    {
+      "slug": "beijing-juyongguan-great-wall",
+      "field": "price_senior_cny",
+      "old_value": 22,
+      "new_value": 0,
+      "reason": "60+ GRATIS met paspoort (officiële gov); DB zei 22 CNY",
+      "sources": [
+        "https://english.beijing.gov.cn/specials/ticketing/attractions/202407/t20240717_3751596.html"
+      ]
+    },
+    {
+      "slug": "beijing-juyongguan-great-wall",
+      "field": "opening_hours",
+      "old_value": "08:00-17:00",
+      "new_value": "peak (apr-okt) 08:30-17:30; off-peak 08:30-16:30",
+      "reason": "officiële uren peak 08:30-17:30"
+    },
+    {
+      "slug": "beijing-liyuan-peking-opera",
+      "field": "duration_min",
+      "old_value": 70,
+      "new_value": 75,
+      "reason": "dagelijks 19:30-20:45 bevestigd (duurt 75 min i.p.v. 70)"
+    },
+    {
+      "slug": "beijing-liyuan-peking-opera",
+      "field": "opening_hours",
+      "old_value": "19:30-20:40",
+      "new_value": "19:30-20:45",
+      "reason": "show duurt 75 min, einde 20:45"
+    },
+    {
+      "slug": "beijing-opera-mask-workshop-liyuan",
+      "field": "opening_hours",
+      "old_value": "show 19:30-20:40",
+      "new_value": "show 19:30-20:45",
+      "reason": "consistent met liyuan show einde 20:45"
+    },
+    {
+      "slug": "beijing-qianmen-street",
+      "field": "seasonal_notes",
+      "append_value": "Tram (dingding) kan op werkdagen in off-season beperkt zijn — verifieer ter plaatse.",
+      "reason": "tram rijdt primair op piekdagen/feestdagen"
+    },
+    {
+      "slug": "beijing-skp",
+      "field": "address_nl",
+      "old_value": "87 Jianguo Road",
+      "new_value": "87 or 97 Jianguo Road (hoofdingang), Chaoyang District, Beijing",
+      "reason": "meerdere bronnen noemen No. 97 Jianguo Road; SKP heeft mogelijk meerdere ingangen — verifieer via Baidu Maps"
+    },
+    {
+      "slug": "beijing-solana",
+      "field": "opening_hours",
+      "old_value": "10:00-22:00",
+      "new_value": "Ma-do 11:00-21:30; vr-zo 11:00-22:00",
+      "reason": "officiële site: Mon-Thu 11:00-21:30; Fri-Sun 11:00-22:00",
+      "sources": [
+        "http://www.solana.com.cn/en_home.html"
+      ]
+    },
+    {
+      "slug": "beijing-yuyuantan-park-cherry",
+      "field": "price_adult_cny",
+      "old_value": 2,
+      "new_value": 10,
+      "reason": "Festival loopt 19 mrt - 15 mei 2026; reisperiode valt binnen festival → ticket CNY 10",
+      "sources": [
+        "https://english.beijing.gov.cn/whatson/events/travelling/202603/t20260318_4560627.html",
+        "https://www.travelchinaguide.com/attraction/beijing/yuyuantan-park.htm"
+      ]
+    },
+    {
+      "slug": "beijing-yuyuantan-park-cherry",
+      "field": "price_senior_cny",
+      "old_value": 0,
+      "new_value": 5,
+      "reason": "Senior 60+ krijgt 50% tijdens festival: 5 CNY (niet gratis tijdens festival)"
+    },
+    {
+      "slug": "beijing-yuyuantan-park-cherry",
+      "field": "seasonal_notes",
+      "old_value": "kersenbloesempiek 25 mrt - 15 april, waarschijnlijk voorbij",
+      "new_value": "Festival loopt 19 mrt - 15 mei 2026; tijdens reisperiode TICKET CNY 10. Kersenbloesempiek 30 mrt - 20 apr (late variëteiten Kanzan tot eind april).",
+      "reason": "festival ACTIEF tijdens reisperiode; ticket 10 CNY (niet 2)"
+    },
+    {
+      "slug": "weiyang-palace-archaeological-park",
+      "field": "opening_hours",
+      "old_value": "08:00-18:00 (mrt-nov), park tot 22:00",
+      "new_value": "park dagelijks 06:00-22:00 (gratis, geen reservering)",
+      "reason": "Trip.com: park 06:00-22:00 gratis, geen reservering nodig; JSON's 08:00-18:00 lijkt te beperkt",
+      "sources": [
+        "https://www.trip.com/travel-guide/attraction/xi-an/archaeological-park-of-weiyang-palace-in-chang-an-city-of-the-western-han-dynasty-89236/"
+      ]
+    },
+    {
+      "slug": "tongshengxiang-paomo",
+      "field": "tips_nl",
+      "append_value": "Labor Day 2026: zeer druk; reserveren via Dianping sterk aanbevolen.",
+      "reason": "Labor Day drukte; vooraf reserveren"
+    },
+    {
+      "slug": "xian-big-wild-goose-fountain",
+      "field": "opening_hours",
+      "old_value": "ma-vr 20:30 (1x); za-zo 12:00, 16:00, 20:30",
+      "new_value": "Dinsdag 19:00/21:00; overige dagen 12:00, 16:00, 19:00, 21:00 (verifieer officiële tijden ter plekke)",
+      "reason": "orange-transfer.com en chinaxiantour.com geven ander schema: avondshow primair om 21:00 niet 20:30; dinsdag afwijkend",
+      "sources": [
+        "https://www.orange-transfer.com/musical-fountain-big-wild-goose-pagoda/",
+        "https://www.chinaxiantour.com/"
+      ]
+    },
+    {
+      "slug": "xian-century-ginwa",
+      "field": "opening_hours",
+      "old_value": "10:00-22:00",
+      "new_value": "zomer 09:30-22:00 / winter 09:30-21:00",
+      "reason": "Bell Tower filiaal 09:30-22:00 zomer / 09:30-21:00 winter; JSON 10:00 te laat",
+      "sources": [
+        "https://www.cityseeker.com/",
+        "https://www.tripadvisor.com/"
+      ]
+    },
+    {
+      "slug": "xian-city-wall-night",
+      "field": "price_senior_cny",
+      "old_value": 27,
+      "new_value": 0,
+      "reason": "70+ altijd gratis; 65-70 halfprijs discrepant over bronnen"
+    },
+    {
+      "slug": "xian-city-wall-night",
+      "field": "warnings_nl",
+      "append_value": "Senior-korting: 70+ gratis, 65-69 halfprijs (ca. CNY 27); paspoort verplicht bij balie.",
+      "reason": "verduidelijking senior-korting leeftijdsklassen"
+    },
+    {
+      "slug": "xian-city-wall-south-gate",
+      "field": "booking_required",
+      "old_value": false,
+      "new_value": true,
+      "reason": "wildgreatwall.com: real-name online reservering 6 dagen vooraf verplicht sinds 23 sep 2023",
+      "sources": [
+        "https://wildgreatwall.com/xian-city-wall/"
+      ]
+    },
+    {
+      "slug": "xian-city-wall-south-gate",
+      "field": "warnings_nl",
+      "append_value": "Labor Day 2026: extreem druk; online reserveren aanbevolen om crowd-control-quota niet te verliezen.",
+      "reason": "Labor Day crowd-warning"
+    },
+    {
+      "slug": "xian-city-wall-south-gate-yongningmen",
+      "field": "booking_required",
+      "old_value": false,
+      "new_value": true,
+      "reason": "wildgreatwall.com: reservering 6 dagen vooraf verplicht",
+      "sources": [
+        "https://wildgreatwall.com/xian-city-wall/"
+      ]
+    },
+    {
+      "slug": "xian-city-wall-south-gate-yongningmen",
+      "field": "price_senior_cny",
+      "old_value": 27,
+      "new_value": 0,
+      "reason": "70+ gratis (bevestigd travelchinaguide)"
+    },
+    {
+      "slug": "xian-gao-family-courtyard",
+      "field": "tips_nl",
+      "append_value": "Shadow puppet show elk uur 10:00-22:00 (15 min); JSON-tijden 11:00/14:00/16:00/20:00 zijn te beperkt.",
+      "reason": "Trip.com en travelchinaguide bevestigen elk-uur showschema",
+      "sources": [
+        "https://www.trip.com/travel-guide/attraction/xi-an/gaos-thought-compound-89194/"
+      ]
+    },
+    {
+      "slug": "xian-muslim-quarter-shopping",
+      "field": "warnings_nl",
+      "append_value": "Labor Day 2026: extreem druk, mogelijk crowd-control in Huimin Jie.",
+      "reason": "Labor Day drukte-waarschuwing"
+    },
+    {
+      "slug": "xian-qinglong-temple",
+      "field": "seasonal_notes",
+      "append_value": "Tijdens kerselaarseizoen (15 mrt - 15 apr) entree CNY 10-16; reisperiode 25 apr - 2 mei valt na piek → gratis.",
+      "reason": "kerselaarseizoen entree tijdelijk betaald"
+    },
+    {
+      "slug": "xian-science-technology-museum",
+      "field": "warnings_nl",
+      "append_value": "Prijs CNY 30 is onzeker — veel Chinese wetenschapsmusea zijn gratis; confirmeer ter plaatse.",
+      "reason": "geen expliciete bron voor 30 CNY prijs gevonden"
+    },
+    {
+      "slug": "xian-tang-dynasty-show",
+      "field": "opening_hours",
+      "old_value": "Show 20:30-21:50, banket 19:00",
+      "new_value": "Banket 18:00-19:30, Show 19:30-20:35 (soms 20:30-21:50 in hoogseizoen)",
+      "reason": "travelchinaguide.com en xiantangdynastyshow.com: dining 18:00-19:30 + show 19:30-20:35; starttijd seizoensgebonden",
+      "sources": [
+        "https://www.travelchinaguide.com/",
+        "https://www.xiantangdynastyshow.com/"
+      ]
+    },
+    {
+      "slug": "xian-tang-west-market",
+      "field": "tips_nl",
+      "append_value": "Museum van Tang West Market: maandag gesloten, 09:00-17:30 apr-okt (apart van shopping-complex).",
+      "reason": "museum heeft andere uren dan shopping-complex",
+      "sources": [
+        "https://www.trip.com/travel-guide/attraction/xi-an/tang-west-market-museum-101091/"
+      ]
+    },
+    {
+      "slug": "xianyang-city-wall-tang-ceremony",
+      "field": "opening_hours",
+      "old_value": "Do-zo 20:30-21:00 (Tang ceremony); ma-wo gesloten",
+      "new_value": "Avond-ceremonie 20:30; welkomstceremonie overdag 08:30/09:00; daytime mini-performances 10:00/11:00/15:00/16:00",
+      "reason": "chinaxiantour.com en tripadvisor.com bevestigen daytime schedule naast avond-ceremonie"
+    },
+    {
+      "slug": "xianyang-city-wall-tang-ceremony",
+      "field": "closed_days",
+      "old_value": ["monday", "tuesday", "wednesday"],
+      "new_value": ["monday"],
+      "reason": "meestal di-zo open; alleen maandag vaak gesloten/aangepast"
+    },
+    {
+      "slug": "xingqing-palace-park",
+      "field": "opening_hours",
+      "old_value": "06:00-22:00",
+      "new_value": "mrt-apr 06:00-19:30; mei-aug 05:30-20:00",
+      "reason": "xianprivatetour.com en Trip.com: seizoensgebonden uren; JSON's 06:00-22:00 te ruim",
+      "sources": [
+        "https://www.xianprivatetour.com/",
+        "https://www.trip.com/travel-guide/attraction/xi-an/xingqing-palace-park-80244/"
+      ]
+    },
+    {
+      "slug": "wangfujing-snack-street",
+      "field": "warnings_nl",
+      "append_value": "KRITISCH: traditionele snack-straat is grotendeels verdwenen sinds ca. 2016-2019; foodstalls zijn verplaatst naar Gui Jie en Xianyukou. Huidige straat heeft meer culturele souvenirs dan food. Alternatief: Huguosi Snack Street of Gui Jie.",
+      "reason": "status-wijziging bevestigd door meerdere bronnen (tripadvisor 2024+, tour-beijing.com)",
+      "sources": [
+        "https://www.tour-beijing.com/blog/beijing-travel/beijing-food/wangfujing-night-food-street"
+      ]
+    },
+    {
+      "slug": "yuyuantan-park",
+      "field": "seasonal_notes",
+      "append_value": "2026 sakura-piek ca. 25 mrt-15 apr; reisperiode eind apr mist piek. Senior 65+ gratis (60-65 soms halfprijs).",
+      "reason": "verduidelijking sakura-timing en senior-leeftijdsgrens"
+    }
+  ]
+}
