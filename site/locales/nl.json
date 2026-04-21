@@ -126,6 +126,7 @@
   "loc_duration_hours": "~{{h}} u",
   "loc_address": "Adres (Chinees)",
   "loc_show_chinese": "Toon aan taxichauffeur",
+  "loc_speak_aloud": "Hardop voorlezen",
   "loc_source": "Bron",
   "loc_tips": "Tips",
   "loc_warnings": "Let op",

@@ -525,6 +525,29 @@
     </div>
   </div>
 
+  <!-- TAXI-CARD FULLSCREEN SHEET (toon aan taxichauffeur) -->
+  <div id="taxi-sheet" class="fixed inset-0 z-[60] hidden bg-white" role="dialog" aria-modal="true" aria-labelledby="taxi-sheet-name">
+    <button id="taxi-sheet-close" aria-label="Sluiten"
+            class="absolute top-4 right-4 h-14 w-14 rounded-full bg-black text-white text-3xl font-bold shadow-lg focus-ring z-10">✕</button>
+    <div class="h-full w-full overflow-y-auto px-5 py-6 flex flex-col items-center text-center" lang="zh-CN"
+         style="padding-top: calc(24px + env(safe-area-inset-top)); padding-bottom: calc(24px + env(safe-area-inset-bottom));">
+      <div class="w-full max-w-xl flex flex-col items-center gap-5 text-black">
+        <div class="text-[22px] font-semibold">您好，请带我去：</div>
+        <div id="taxi-sheet-name" class="text-[42px] font-bold leading-tight break-words"></div>
+        <div id="taxi-sheet-addr-wrap" class="w-full border-t-2 border-black/20 pt-5 hidden">
+          <div class="text-[18px] font-semibold text-black/70 mb-2">地址 / adres</div>
+          <div id="taxi-sheet-addr" class="text-[30px] font-semibold leading-snug break-words"></div>
+        </div>
+        <div class="text-[28px] font-semibold mt-2">谢谢！</div>
+        <div id="taxi-sheet-translation" class="w-full mt-4 pt-4 border-t border-black/10 text-[15px] text-black/60 italic leading-snug break-words"></div>
+        <button id="taxi-sheet-speak"
+                class="mt-4 h-14 px-6 rounded-2xl bg-black text-white font-semibold text-[17px] inline-flex items-center gap-2 focus-ring">
+          🔊 <span data-i18n="loc_speak_aloud">Hardop voorlezen</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div id="toast-container" class="fixed bottom-24 inset-x-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
 

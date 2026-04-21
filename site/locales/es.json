@@ -126,6 +126,7 @@
   "loc_duration_hours": "~{{h}} h",
   "loc_address": "Dirección (en chino)",
   "loc_show_chinese": "Mostrar al taxista",
+  "loc_speak_aloud": "Leer en voz alta",
   "loc_source": "Fuente",
   "loc_tips": "Consejos",
   "loc_warnings": "Cuidado",

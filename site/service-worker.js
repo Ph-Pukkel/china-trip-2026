@@ -3,7 +3,7 @@
 // immediately on refresh), with cache fallback for offline. The previous
 // cache-first strategy caused users to keep seeing old Dutch-only content
 // after deploys.
-const VERSION = "v8-2026-04-21-network-first";
+const VERSION = "v9-2026-04-21-taxi-card";
 const CACHE = `china2026-${VERSION}`;
 const APP_SHELL = [
   "./",

@@ -614,6 +614,50 @@ function closeLocModal() {
   document.getElementById("loc-modal").classList.add("hidden");
   state.__modalLoc = null;
 }
+
+// ------------------------- TAXI-SHEET (fullscreen kaart voor chauffeur) -------------------------
+function buildTaxiSpokenText(l) {
+  const nameZh = (l.name_zh || "").trim();
+  const addrZh = (l.address_zh || "").trim();
+  const parts = ["您好，请带我去"];
+  parts.push(nameZh ? nameZh + "。" : "这里。");
+  if (addrZh) parts.push("地址：" + addrZh + "。");
+  parts.push("谢谢！");
+  return parts.join("");
+}
+function buildTaxiTranslation(l) {
+  const name = locText(l, "name") || l.name_nl || "";
+  const addr = locText(l, "address") || "";
+  if (state.lang === "es") {
+    return `"Hola, por favor lléveme a ${name}${addr ? `. La dirección es ${addr}` : ""}. ¡Gracias!"`;
+  }
+  return `"Hallo, kunt u mij naar ${name} brengen${addr ? `. Het adres is ${addr}` : ""}. Dank u wel!"`;
+}
+function openTaxiSheet(slug) {
+  const l = state.locations.find((x) => x.slug === slug);
+  if (!l) return;
+  const nameZh = (l.name_zh || "").trim();
+  const addrZh = (l.address_zh || "").trim();
+  document.getElementById("taxi-sheet-name").textContent = nameZh || (locText(l, "name") || l.name_nl || "");
+  const wrap = document.getElementById("taxi-sheet-addr-wrap");
+  const addrEl = document.getElementById("taxi-sheet-addr");
+  if (addrZh) {
+    addrEl.textContent = addrZh;
+    wrap.classList.remove("hidden");
+  } else {
+    addrEl.textContent = "";
+    wrap.classList.add("hidden");
+  }
+  document.getElementById("taxi-sheet-translation").textContent = buildTaxiTranslation(l);
+  const speak = document.getElementById("taxi-sheet-speak");
+  speak.setAttribute("data-text", buildTaxiSpokenText(l));
+  document.getElementById("taxi-sheet").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+function closeTaxiSheet() {
+  document.getElementById("taxi-sheet").classList.add("hidden");
+  document.body.style.overflow = "";
+}
 function setModalPhoto(idx) {
   const l = currentModalLocation();
   if (!l || !Array.isArray(l.photos) || l.photos.length === 0) return;
@@ -801,14 +845,46 @@ function renderModalContent() {
           </div>
         </dl>
 
-        <!-- CHINESE ADDRESS -->
-        ${addressZh || addressNl ? `
+        <!-- TAXI CARD (Chinese name + address, polite phrasing) -->
+        ${(l.name_zh || addressZh || addressNl) ? (() => {
+          const nameZh = (l.name_zh || "").trim();
+          const addrZh = addressZh.trim();
+          // Natuurlijke Chinese aanspraak voor taxichauffeur:
+          // "您好，请带我去 [naam]。地址：[adres]。谢谢！"
+          // (Hallo, kunt u mij naar [naam] brengen. Adres: [adres]. Dank u!)
+          const spokenParts = ["您好，请带我去"];
+          if (nameZh) spokenParts.push(nameZh + "。");
+          else spokenParts.push("这里。");
+          if (addrZh) spokenParts.push("地址：" + addrZh + "。");
+          spokenParts.push("谢谢！");
+          const spokenZh = spokenParts.join("");
+          const pinyinHint = "Nín hǎo, qǐng dài wǒ qù … dìzhǐ shì …  xièxie!";
+          const translationHint = state.lang === "es"
+            ? `"Hola, por favor lléveme a ${name}${addressNl ? `. La dirección es ${addressNl}` : ""}. ¡Gracias!"`
+            : `"Hallo, kunt u mij naar ${name} brengen${addressNl ? `. Het adres is ${addressNl}` : ""}. Dank u wel!"`;
+          return `
         <section>
-          <h3 class="text-xs text-ink-500 font-semibold uppercase tracking-wide">${t("loc_show_chinese")}</h3>
-          ${addressZh ? `<div class="mt-1 p-4 rounded-2xl bg-white border-2 border-brand-600 text-[24px] font-semibold text-center leading-snug" lang="zh-CN">${escapeHtml(addressZh)}</div>` : ""}
-          ${addressNl ? `<p class="text-sm text-ink-500 mt-1">${escapeHtml(addressNl)}</p>` : ""}
-          ${addressZh ? `<button class="mt-2 h-11 px-4 rounded-xl bg-trust-100 text-trust-700 font-semibold focus-ring" data-action="speak-zh" data-text="${escapeAttr(addressZh)}">🔊 ${t("loc_show_chinese")}</button>` : ""}
-        </section>` : ""}
+          <h3 class="text-xs text-ink-500 font-semibold uppercase tracking-wide mb-1">🚖 ${t("loc_show_chinese")}</h3>
+          <div class="p-4 rounded-2xl bg-white border-2 border-brand-600 text-center leading-snug space-y-3" lang="zh-CN">
+            <div class="text-[18px] text-ink-700">您好，请带我去：</div>
+            ${nameZh ? `<div class="text-[30px] font-bold text-ink-900 leading-tight">${escapeHtml(nameZh)}</div>` : ""}
+            ${addrZh ? `
+              <div class="pt-2 border-t border-line">
+                <div class="text-[15px] text-ink-500 mt-2 mb-1">地址 / adres</div>
+                <div class="text-[22px] font-semibold text-ink-900 leading-snug">${escapeHtml(addrZh)}</div>
+              </div>` : ""}
+            <div class="text-[20px] font-semibold text-ink-700 pt-1">谢谢！</div>
+          </div>
+          <div class="mt-2 p-3 rounded-xl bg-line/30 text-[14px] text-ink-700 space-y-1">
+            <p class="italic text-ink-500">${escapeHtml(pinyinHint)}</p>
+            <p>${escapeHtml(translationHint)}</p>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button class="flex-1 min-w-[180px] h-14 px-4 rounded-2xl btn-primary font-bold text-[17px] focus-ring inline-flex items-center justify-center gap-2" data-action="taxi-sheet" data-slug="${l.slug}">🚖 ${t("loc_show_chinese")}</button>
+            <button class="h-14 px-4 rounded-2xl bg-trust-100 text-trust-700 font-semibold focus-ring inline-flex items-center gap-2" data-action="speak-zh" data-text="${escapeAttr(spokenZh)}">🔊 ${t("loc_speak_aloud") || t("loc_show_chinese")}</button>
+          </div>
+        </section>`;
+        })() : ""}
 
         ${description ? `<section><p class="text-[17px] leading-relaxed text-ink-900">${escapeHtml(description)}</p></section>` : ""}
 
@@ -975,7 +1051,8 @@ document.addEventListener("click", (e) => {
     const slug = act.getAttribute("data-slug");
     if (a === "open-loc") openLocModal(slug);
     if (a === "add-to-plan") openAddModal(slug);
-    if (a === "show-chinese") openLocModal(slug);
+    if (a === "show-chinese") openTaxiSheet(slug);
+    if (a === "taxi-sheet") openTaxiSheet(slug);
     if (a === "speak-zh") speakZh(act.getAttribute("data-text"));
   }
   const mapBtn = e.target.closest(".map-city-btn");
@@ -989,6 +1066,11 @@ document.getElementById("loc-modal-close")?.addEventListener("click", closeLocMo
 document.getElementById("loc-modal")?.addEventListener("click", (e) => {
   // close when clicking the dimmed backdrop (outside the card itself)
   if (e.target.id === "loc-modal") closeLocModal();
+});
+document.getElementById("taxi-sheet-close")?.addEventListener("click", closeTaxiSheet);
+document.getElementById("taxi-sheet-speak")?.addEventListener("click", (e) => {
+  const txt = e.currentTarget.getAttribute("data-text");
+  if (txt) speakZh(txt);
 });
 document.getElementById("btn-home-logo").onclick = () => go("home");
 document.getElementById("explore-search").addEventListener("input", (e) => {
@@ -1012,7 +1094,7 @@ document.getElementById("diary-save").onclick = async () => {
   toast(t("today_diary_saved"));
 };
 window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") { closeLocModal(); closeAddModal(); }
+  if (e.key === "Escape") { closeLocModal(); closeAddModal(); closeTaxiSheet(); }
   const modalOpen = !document.getElementById("loc-modal").classList.contains("hidden");
   const l = currentModalLocation();
   if (modalOpen && l && Array.isArray(l.photos) && l.photos.length > 1) {

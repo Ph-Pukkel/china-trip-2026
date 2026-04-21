@@ -124,6 +124,7 @@
   "loc_duration_hours": "~{{h}} 小时",
   "loc_address": "地址(中文)",
   "loc_show_chinese": "给司机看",
+  "loc_speak_aloud": "朗读",
   "loc_source": "来源",
   "loc_tips": "小贴士",
   "loc_warnings": "注意",
