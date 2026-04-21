@@ -33,6 +33,10 @@ const state = {
   // Modal paging
   modalList: [],
   modalIndex: 0,
+  // Distance mode: "hotel" (default) or "me" — gebruiker-locatie via Geolocation API
+  distanceMode: localStorage.getItem("distanceMode") || "hotel",
+  userPos: null,          // {lat, lng} zodra opgehaald in deze sessie
+  userPosPending: false,  // true tijdens de getCurrentPosition-call
 };
 window.__state = state; // for debug
 
@@ -101,7 +105,16 @@ function go(name, sub) {
   if (name === "home") renderHome();
   if (name === "explore") renderExplore();
   history.replaceState({ screen: name, sub }, "", `#${name}${sub ? ":" + sub : ""}`);
-  window.scrollTo({ top: 0, behavior: "instant" });
+  // Scroll-gedrag: bij Help+sub scroll direct naar de geopende sectie
+  // zodat senioren de details zien zonder zelf naar beneden te scrollen.
+  // Bij andere schermen naar top.
+  if (name === "help" && sub) {
+    requestAnimationFrame(() => {
+      scrollToEl(document.getElementById("help-detail"), { offset: 80 });
+    });
+  } else {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
 }
 
 // ------------------------- Dates -------------------------
@@ -311,6 +324,7 @@ const CATS = ["museum", "monument", "tempel", "restaurant", "shopping", "park", 
 const TAGS = ["unesco", "must-see", "senior-vriendelijk", "gratis", "kindvriendelijk", "regenbestendig"];
 
 function renderExplore() {
+  syncDistanceChips();
   const chipsEl = document.getElementById("filter-chips");
   chipsEl.innerHTML = "";
 
@@ -365,6 +379,13 @@ function toggleFilter(kind, v) {
     f[kind] = f[kind] === v ? null : v;
   }
   renderExplore();
+  // Na een filter-selectie soepel scrollen naar het eerste resultaat,
+  // zodat senioren direct zien wat er past (ipv handmatig naar beneden swipen).
+  requestAnimationFrame(() => {
+    const list = document.getElementById("explore-list");
+    const first = list?.querySelector("li");
+    scrollToEl(first || list, { offset: 80 });
+  });
 }
 
 function labelFor(v, kind) {
@@ -392,20 +413,98 @@ function starRating(value, max = 5) {
   return `<div class="star-rating" role="img" aria-label="${t("loc_rating_label", { value: label })}">${stars.join("")}</div>`;
 }
 
-// ------------------------- Distance helper -------------------------
-function distanceFromHotel(l) {
+// ------------------------- Distance helpers -------------------------
+function haversineKm(aLat, aLng, bLat, bLng) {
+  const R = 6371;
+  const toRad = (d) => d * Math.PI / 180;
+  const dLat = toRad(bLat - aLat);
+  const dLon = toRad(bLng - aLng);
+  const h = Math.sin(dLat/2)**2 + Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1-h));
+}
+function fmtKm(km) {
+  return km < 10 ? km.toFixed(1) : Math.round(km);
+}
+/** Afstand voor een locatie — respecteert state.distanceMode.
+ *  Geeft { km, from } of null. `from` is "hotel" of "me". */
+function distanceFor(l) {
   if (!l || l.lat == null || l.lng == null) return null;
+  if (state.distanceMode === "me" && state.userPos) {
+    const km = haversineKm(state.userPos.lat, state.userPos.lng, l.lat, l.lng);
+    return { km: fmtKm(km), from: "me" };
+  }
   const hotelCity = l.city === "xian" ? "xian" : "beijing";
   const hotel = CFG.HOTELS?.[hotelCity];
   if (!hotel) return null;
-  const R = 6371;
-  const toRad = (d) => d * Math.PI / 180;
-  const dLat = toRad(l.lat - hotel.lat);
-  const dLon = toRad(l.lng - hotel.lng);
-  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(hotel.lat)) * Math.cos(toRad(l.lat)) * Math.sin(dLon/2)**2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  const km = R * c;
-  return km < 10 ? km.toFixed(1) : Math.round(km);
+  const km = haversineKm(hotel.lat, hotel.lng, l.lat, l.lng);
+  return { km: fmtKm(km), from: "hotel" };
+}
+// Legacy-alias voor plekken die alleen het getal willen
+function distanceFromHotel(l) {
+  const d = distanceFor(l);
+  return d ? d.km : null;
+}
+function distanceLabel(d) {
+  if (!d) return null;
+  return d.from === "me"
+    ? t("explore_distance_from_me",    { n: d.km })
+    : t("explore_distance_from_hotel", { n: d.km });
+}
+
+// ------------------------- Geolocation -------------------------
+function requestUserPosition() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) return resolve({ ok: false, reason: "unavailable" });
+    state.userPosPending = true;
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        state.userPosPending = false;
+        state.userPos = { lat: p.coords.latitude, lng: p.coords.longitude };
+        resolve({ ok: true });
+      },
+      (err) => {
+        state.userPosPending = false;
+        const reason = err && err.code === 1 ? "denied" : "unavailable";
+        resolve({ ok: false, reason });
+      },
+      { enableHighAccuracy: false, maximumAge: 60_000, timeout: 10_000 }
+    );
+  });
+}
+async function setDistanceMode(mode) {
+  if (mode === "me" && !state.userPos) {
+    toast(t("explore_distance_locating"));
+    const res = await requestUserPosition();
+    if (!res.ok) {
+      toast(t(res.reason === "denied" ? "explore_distance_denied" : "explore_distance_unavailable"));
+      return; // chip blijft op "hotel"
+    }
+  }
+  state.distanceMode = mode;
+  localStorage.setItem("distanceMode", mode);
+  syncDistanceChips();
+  if (state.currentScreen === "explore") renderExplore();
+}
+function syncDistanceChips() {
+  document.querySelectorAll("[data-dist-mode]").forEach((b) => {
+    const active = b.getAttribute("data-dist-mode") === state.distanceMode;
+    b.classList.toggle("chip-on", active);
+    b.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+// ------------------------- Scroll helpers -------------------------
+const PREFERS_REDUCED = window.matchMedia
+  ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  : false;
+function scrollToEl(el, opts = {}) {
+  if (!el) return;
+  // Top-bar hoogte ≈ 64px (sticky). Gebruik scrollIntoView met kleine top-offset via scrollMarginTop.
+  el.style.scrollMarginTop = (opts.offset ?? 72) + "px";
+  el.scrollIntoView({
+    behavior: PREFERS_REDUCED ? "auto" : "smooth",
+    block: opts.block || "start",
+  });
 }
 
 // ------------------------- Placeholder images per category -------------------------
@@ -438,7 +537,8 @@ function cardHtml(l) {
   const priceAdult = l.price_adult_cny === 0 ? t("loc_free") : `¥${l.price_adult_cny ?? "?"}`;
   const rating = Number(l.rating) || 0;
   const reviews = Number(l.review_count) || 0;
-  const distKm = distanceFromHotel(l);
+  const dist = distanceFor(l);
+  const distLabel = distanceLabel(dist);
   const tagline = locText(l, "tagline");
   const photo = l.photo_url || placeholderFor(l.category);
   const name = locText(l, "name") || l.name_nl || "";
@@ -456,7 +556,7 @@ function cardHtml(l) {
              onerror="this.onerror=null; this.src='${escapeAttr(placeholderFor(l.category))}';" />
         <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/95 text-ink-900 text-sm font-semibold shadow-sm">${escapeHtml(catL)}</span>
         ${inPlan ? `<span class="absolute top-3 right-3 h-9 w-9 rounded-full bg-success-700 text-white flex items-center justify-center font-bold shadow">✓</span>` : ""}
-        ${distKm != null ? `<span class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-black/70 text-white text-sm font-semibold">📍 ${t("explore_distance_from_hotel", { n: distKm })}</span>` : ""}
+        ${distLabel ? `<span class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-black/70 text-white text-sm font-semibold inline-flex items-center gap-1.5"><svg class="ds-icon" style="width:12px;height:12px" aria-hidden="true"><use href="#${dist.from === "me" ? "i-locate" : "i-pin"}"/></svg>${escapeHtml(distLabel)}</span>` : ""}
         ${closedToday ? `<span class="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-danger-100 text-danger-700 text-sm font-semibold shadow-sm">${t("loc_closed_today")}</span>` : ""}
       </div>
       <div class="p-4">
@@ -571,7 +671,7 @@ function renderModalContent() {
   const priceSenior = l.price_senior_cny === 0 ? t("loc_free") : (l.price_senior_cny != null ? `¥${l.price_senior_cny}` : "—");
   const rating = Number(l.rating) || 0;
   const reviews = Number(l.review_count) || 0;
-  const distKm = distanceFromHotel(l);
+  const distObj = distanceFor(l);
   const durStr = l.duration_min >= 120 ? t("loc_duration_hours", { h: Math.round(l.duration_min / 60) }) : t("loc_duration", { n: l.duration_min || "?" });
   const openHours = typeof l.opening_hours === "string" ? l.opening_hours : "";
   const pager = t("loc_pager", { cur: state.modalIndex + 1, total: list.length });
@@ -694,8 +794,8 @@ function renderModalContent() {
           </div>
           <div class="rounded-2xl bg-line/30 p-3">
             <dt class="text-xs text-ink-500 font-semibold uppercase tracking-wide">${t("loc_distance_label")}</dt>
-            <dd class="text-[18px] font-bold mt-0.5">📍 ${distKm != null ? distKm + " km" : "—"}</dd>
-            <dd class="text-sm text-ink-500">${t("loc_from_hotel")}</dd>
+            <dd class="text-[18px] font-bold mt-0.5 inline-flex items-center gap-1.5"><svg class="ds-icon" style="width:16px;height:16px" aria-hidden="true"><use href="#${distObj && distObj.from === "me" ? "i-locate" : "i-pin"}"/></svg>${distObj ? distObj.km + " km" : "—"}</dd>
+            <dd class="text-sm text-ink-500">${distObj && distObj.from === "me" ? t("explore_distance_mode_me") : t("loc_from_hotel")}</dd>
           </div>
         </dl>
 
@@ -847,6 +947,13 @@ window.addEventListener("offline", () => setOnline(false));
 
 // ------------------------- Wire up UI events -------------------------
 document.addEventListener("click", (e) => {
+  // Afstand-modus toggle (Hotel ↔ Mijn locatie)
+  const distBtn = e.target.closest("[data-dist-mode]");
+  if (distBtn) {
+    const mode = distBtn.getAttribute("data-dist-mode");
+    if (mode !== state.distanceMode) setDistanceMode(mode);
+    return;
+  }
   const nav = e.target.closest("[data-nav]");
   if (nav) {
     const v = nav.getAttribute("data-nav");

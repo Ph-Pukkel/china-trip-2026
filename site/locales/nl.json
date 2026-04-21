@@ -54,6 +54,13 @@
   "explore_filter_tags": "Bijzonder",
   "explore_no_results": "Geen resultaten. Probeer een ander filter.",
   "explore_distance_from_hotel": "{{n}} km van hotel",
+  "explore_distance_from_me": "{{n}} km van jou",
+  "explore_distance_label": "Afstand vanaf:",
+  "explore_distance_mode_hotel": "Hotel",
+  "explore_distance_mode_me": "Mijn locatie",
+  "explore_distance_locating": "Locatie ophalen…",
+  "explore_distance_denied": "Geen toegang tot je locatie. Zet locatie aan in je browser.",
+  "explore_distance_unavailable": "Locatie niet beschikbaar. Probeer later opnieuw.",
 
   "city_xian": "Xi'an",
   "city_beijing": "Beijing",

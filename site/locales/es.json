@@ -54,6 +54,13 @@
   "explore_filter_tags": "Especial",
   "explore_no_results": "Sin resultados. Prueba otro filtro.",
   "explore_distance_from_hotel": "a {{n}} km del hotel",
+  "explore_distance_from_me": "a {{n}} km de ti",
+  "explore_distance_label": "Distancia desde:",
+  "explore_distance_mode_hotel": "Hotel",
+  "explore_distance_mode_me": "Mi ubicación",
+  "explore_distance_locating": "Obteniendo ubicación…",
+  "explore_distance_denied": "Sin acceso a tu ubicación. Actívala en tu navegador.",
+  "explore_distance_unavailable": "Ubicación no disponible. Inténtalo más tarde.",
 
   "city_xian": "Xi'an",
   "city_beijing": "Pekín",
