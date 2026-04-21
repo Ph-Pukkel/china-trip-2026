@@ -7,7 +7,6 @@ import { initPlanner } from "./planner.js";
 import { initMap } from "./map.js";
 import { HELP_CONTENT } from "./help-content.js";
 import { PHRASES } from "./phrases.js";
-import { attachSwipe } from "./swipe.js";
 
 const CFG = window.APP_CONFIG;
 // Auto-login: geen drempel voor het gezin — iedereen met de URL is binnen.
@@ -30,9 +29,8 @@ const state = {
   i18n: {},
   sync: null,
   online: navigator.onLine,
-  // Modal paging
-  modalList: [],
-  modalIndex: 0,
+  // Foto-gallery binnen de locatie-modal
+  modalPhotoIndex: 0,
   // Distance mode: "hotel" (default) or "me" — gebruiker-locatie via Geolocation API
   distanceMode: localStorage.getItem("distanceMode") || "hotel",
   userPos: null,          // {lat, lng} zodra opgehaald in deze sessie
@@ -413,6 +411,17 @@ function starRating(value, max = 5) {
   return `<div class="star-rating" role="img" aria-label="${t("loc_rating_label", { value: label })}">${stars.join("")}</div>`;
 }
 
+// ------------------------- Currency helpers -------------------------
+/** "¥50 · €6,50" of "Gratis". cny === 0 en cny == null worden afzonderlijk behandeld. */
+function fmtPrice(cny) {
+  if (cny === 0) return t("loc_free");
+  if (cny == null) return "—";
+  const eur = Number(cny) * (CFG.CNY_EUR_RATE || 0.13);
+  const dec = state.lang === "zh" ? "." : ",";
+  const eurStr = eur.toFixed(eur < 10 ? 2 : (eur < 100 ? 1 : 0)).replace(".", dec);
+  return `¥${cny} · €${eurStr}`;
+}
+
 // ------------------------- Distance helpers -------------------------
 function haversineKm(aLat, aLng, bLat, bLng) {
   const R = 6371;
@@ -534,13 +543,15 @@ function placeholderFor(category) {
 function cardHtml(l) {
   const inPlan = state.items.some((i) => i.location_slug === l.slug);
   const closedToday = closedToday_(l);
-  const priceAdult = l.price_adult_cny === 0 ? t("loc_free") : `¥${l.price_adult_cny ?? "?"}`;
+  const priceAdult = fmtPrice(l.price_adult_cny);
   const rating = Number(l.rating) || 0;
   const reviews = Number(l.review_count) || 0;
   const dist = distanceFor(l);
   const distLabel = distanceLabel(dist);
   const tagline = locText(l, "tagline");
-  const photo = l.photo_url || placeholderFor(l.category);
+  const firstPhoto = (Array.isArray(l.photos) && l.photos[0] && l.photos[0].url) || l.photo_url || placeholderFor(l.category);
+  const photo = firstPhoto;
+  const photoCount = Array.isArray(l.photos) ? l.photos.length : 0;
   const name = locText(l, "name") || l.name_nl || "";
   const cityL = cityLabel(l.city);
   const catL = labelFor(l.category, "category");
@@ -555,6 +566,7 @@ function cardHtml(l) {
              onload="this.style.opacity=1; this.parentElement.classList.remove('skeleton-shimmer');"
              onerror="this.onerror=null; this.src='${escapeAttr(placeholderFor(l.category))}';" />
         <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/95 text-ink-900 text-sm font-semibold shadow-sm">${escapeHtml(catL)}</span>
+        ${photoCount > 1 ? `<span class="absolute top-3 right-${inPlan ? "14" : "3"} px-2.5 py-1 rounded-full bg-black/70 text-white text-xs font-semibold inline-flex items-center gap-1 shadow-sm" aria-label="${photoCount} foto's">📷 ${photoCount}</span>` : ""}
         ${inPlan ? `<span class="absolute top-3 right-3 h-9 w-9 rounded-full bg-success-700 text-white flex items-center justify-center font-bold shadow">✓</span>` : ""}
         ${distLabel ? `<span class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-black/70 text-white text-sm font-semibold inline-flex items-center gap-1.5"><svg class="ds-icon" style="width:12px;height:12px" aria-hidden="true"><use href="#${dist.from === "me" ? "i-locate" : "i-pin"}"/></svg>${escapeHtml(distLabel)}</span>` : ""}
         ${closedToday ? `<span class="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-danger-100 text-danger-700 text-sm font-semibold shadow-sm">${t("loc_closed_today")}</span>` : ""}
@@ -587,75 +599,42 @@ function closedToday_(l) {
   return l.closed_days.includes(day);
 }
 
-// ------------------------- Location modal (hero + swipe + language-aware) -------------------------
-function openLocModal(slug, list) {
-  // Default list: current filtered Explore matches, or all locations
-  const activeList = list || state.currentMatches || state.locations;
-  const idx = activeList.findIndex((x) => x.slug === slug);
-  if (idx < 0) return;
-  state.modalList = activeList;
-  state.modalIndex = idx;
+// ------------------------- Location modal (hero + foto-gallery + language-aware) -------------------------
+function currentModalLocation() { return state.__modalLoc || null; }
+
+function openLocModal(slug) {
+  const l = state.locations.find((x) => x.slug === slug);
+  if (!l) return;
+  state.__modalLoc = l;
+  state.modalPhotoIndex = 0;
   renderModalContent();
-  const modal = document.getElementById("loc-modal");
-  modal.classList.remove("hidden");
-  // Attach swipe once
-  if (!modal.__swipeAttached) {
-    const swipeEl = document.getElementById("loc-modal-swipe");
-    attachSwipe(swipeEl, {
-      threshold: 80,
-      onMove: (dx, progress) => {
-        swipeEl.style.transition = "none";
-        swipeEl.style.transform = `translateX(${dx}px)`;
-        swipeEl.style.opacity = String(1 - progress * 0.25);
-      },
-      onSwipeLeft: () => pageModal(+1),
-      onSwipeRight: () => pageModal(-1),
-      onCancel: () => {
-        swipeEl.style.transition = "transform .22s ease-out, opacity .22s";
-        swipeEl.style.transform = "translateX(0)";
-        swipeEl.style.opacity = "1";
-      },
-    });
-    modal.__swipeAttached = true;
-  }
+  document.getElementById("loc-modal").classList.remove("hidden");
 }
 function closeLocModal() {
-  const modal = document.getElementById("loc-modal");
-  modal.classList.add("hidden");
-  const swipeEl = document.getElementById("loc-modal-swipe");
-  if (swipeEl) {
-    swipeEl.style.transition = "none";
-    swipeEl.style.transform = "translateX(0)";
-    swipeEl.style.opacity = "1";
-  }
+  document.getElementById("loc-modal").classList.add("hidden");
+  state.__modalLoc = null;
 }
-function pageModal(delta) {
-  const list = state.modalList;
-  if (!list || list.length === 0) return;
-  const n = (state.modalIndex + delta + list.length) % list.length;
-  const swipeEl = document.getElementById("loc-modal-swipe");
-  const dir = delta > 0 ? -1 : 1;
-  swipeEl.style.transition = "transform .22s ease-in, opacity .22s";
-  swipeEl.style.transform = `translateX(${dir * -100}%)`;
-  swipeEl.style.opacity = "0";
-  setTimeout(() => {
-    state.modalIndex = n;
-    swipeEl.style.transition = "none";
-    swipeEl.style.transform = `translateX(${dir * 100}%)`;
-    renderModalContent();
-    requestAnimationFrame(() => {
-      swipeEl.style.transition = "transform .25s ease-out, opacity .25s";
-      swipeEl.style.transform = "translateX(0)";
-      swipeEl.style.opacity = "1";
-      // Reset scroll to top of content
-      document.getElementById("loc-modal-scroll")?.scrollTo({ top: 0 });
-    });
-  }, 220);
+function setModalPhoto(idx) {
+  const l = currentModalLocation();
+  if (!l || !Array.isArray(l.photos) || l.photos.length === 0) return;
+  const safe = ((idx % l.photos.length) + l.photos.length) % l.photos.length;
+  state.modalPhotoIndex = safe;
+  const img = document.getElementById("loc-modal-hero-img");
+  const cap = document.getElementById("loc-modal-hero-caption");
+  const ph = l.photos[safe];
+  if (img) { img.src = ph.url; img.alt = ph.caption || ""; }
+  if (cap) cap.textContent = ph.caption || "";
+  document.querySelectorAll("[data-thumb-idx]").forEach((b) => {
+    const on = Number(b.getAttribute("data-thumb-idx")) === safe;
+    b.classList.toggle("ring-brand-600", on);
+    b.classList.toggle("ring-2", on);
+    b.classList.toggle("opacity-100", on);
+    b.classList.toggle("opacity-70", !on);
+  });
 }
 
 function renderModalContent() {
-  const list = state.modalList;
-  const l = list[state.modalIndex];
+  const l = currentModalLocation();
   if (!l) return;
   const body = document.getElementById("loc-modal-body");
   const name = locText(l, "name") || l.name_nl || "";
@@ -665,27 +644,35 @@ function renderModalContent() {
   const warnings = locList(l, "warnings");
   const addressNl = locText(l, "address");
   const addressZh = l.address_zh || "";
-  const photo = l.photo_url || placeholderFor(l.category);
+
+  // Photos — new multi-photo gallery, with graceful fallback to photo_url + placeholder
+  let photos = Array.isArray(l.photos) && l.photos.length ? l.photos.slice(0) : null;
+  if (!photos) {
+    photos = [{ url: l.photo_url || placeholderFor(l.category), caption: "", source: "fallback" }];
+  }
+  const startIdx = Math.min(state.modalPhotoIndex || 0, photos.length - 1);
+  state.modalPhotoIndex = startIdx;
+  const heroPhoto = photos[startIdx];
+
   const inPlan = state.items.some((i) => i.location_slug === l.slug);
-  const priceAdult = l.price_adult_cny === 0 ? t("loc_free") : `¥${l.price_adult_cny ?? "?"}`;
-  const priceSenior = l.price_senior_cny === 0 ? t("loc_free") : (l.price_senior_cny != null ? `¥${l.price_senior_cny}` : "—");
+  const priceAdult = fmtPrice(l.price_adult_cny);
+  const priceSenior = fmtPrice(l.price_senior_cny);
   const rating = Number(l.rating) || 0;
   const reviews = Number(l.review_count) || 0;
   const distObj = distanceFor(l);
   const durStr = l.duration_min >= 120 ? t("loc_duration_hours", { h: Math.round(l.duration_min / 60) }) : t("loc_duration", { n: l.duration_min || "?" });
   const openHours = typeof l.opening_hours === "string" ? l.opening_hours : "";
-  const pager = t("loc_pager", { cur: state.modalIndex + 1, total: list.length });
 
   const tagsHtml = (l.tags || []).map((x) => {
     const tl = labelFor(x, "tag") || x;
     return `<span class="px-2 py-1 rounded-full bg-line/50 text-sm">${escapeHtml(tl)}</span>`;
   }).join(" ");
 
-  // Shopping-specific panels
+  // Shopping-specific panels — use locText() so translations work
   const shopsInside = Array.isArray(l.shops_inside) ? l.shops_inside : null;
-  const floorGuide = l.floor_guide_nl; // only NL for now
-  const shoppingTips = l.shopping_tips_nl;
-  const bestFor = l.best_for_nl;
+  const floorGuide = locText(l, "floor_guide");
+  const shoppingTips = locList(l, "shopping_tips");
+  const bestFor = locText(l, "best_for");
 
   const tipsHtml = tips.length ? `
     <section>
@@ -738,25 +725,40 @@ function renderModalContent() {
 
   const sources = (l.source_urls || []).slice(0, 3).map((u) => `<a class="text-trust-700 underline break-all text-sm" href="${escapeAttr(u)}" target="_blank" rel="noreferrer">${escapeHtml(shortUrl(u))}</a>`).join(" · ");
 
+  // Foto-gallery: hoofdfoto + thumbnail-strip eronder
+  const thumbsHtml = photos.length > 1 ? `
+    <div class="flex gap-2 overflow-x-auto px-3 py-2 bg-bg-card border-b border-line" role="tablist" aria-label="Foto's">
+      ${photos.map((p, i) => `
+        <button type="button" data-thumb-idx="${i}" role="tab" aria-selected="${i === startIdx}"
+                class="flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border border-line focus-ring transition-opacity ${i === startIdx ? "opacity-100 ring-2 ring-brand-600" : "opacity-70"}"
+                aria-label="Foto ${i + 1}: ${escapeAttr(p.caption || "")}">
+          <img src="${escapeAttr(p.url)}" alt="" loading="lazy" decoding="async"
+               class="w-full h-full object-cover"
+               onerror="this.onerror=null; this.src='${escapeAttr(placeholderFor(l.category))}';" />
+        </button>
+      `).join("")}
+    </div>
+  ` : "";
+
   body.innerHTML = `
-    <!-- HERO -->
+    <!-- HERO (enkele foto) -->
     <div class="relative aspect-[16/9] bg-line flex-shrink-0 skeleton-shimmer">
-      <img src="${escapeAttr(photo)}" alt="" class="w-full h-full object-cover opacity-0 transition-opacity duration-300"
+      <img id="loc-modal-hero-img" src="${escapeAttr(heroPhoto.url)}" alt="${escapeAttr(heroPhoto.caption || "")}"
+           class="w-full h-full object-cover opacity-0 transition-opacity duration-300"
            onload="this.style.opacity=1; this.parentElement.classList.remove('skeleton-shimmer');"
            onerror="this.onerror=null; this.src='${escapeAttr(placeholderFor(l.category))}';" />
       <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30 pointer-events-none"></div>
 
       <button id="loc-modal-close-inner" class="absolute top-3 left-3 h-12 w-12 rounded-full bg-black/60 text-white text-2xl backdrop-blur focus-ring" aria-label="✕">✕</button>
 
-      <!-- prev / next arrows -->
-      ${list.length > 1 ? `
-      <button data-modal-prev class="absolute top-1/2 -translate-y-1/2 left-3 h-12 w-12 rounded-full bg-black/60 text-white text-2xl backdrop-blur focus-ring flex items-center justify-center" aria-label="${t("loc_prev")}">‹</button>
-      <button data-modal-next class="absolute top-1/2 -translate-y-1/2 right-3 h-12 w-12 rounded-full bg-black/60 text-white text-2xl backdrop-blur focus-ring flex items-center justify-center" aria-label="${t("loc_next")}">›</button>
-      <div class="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-white text-sm font-semibold">${escapeHtml(pager)}</div>
-      ` : ""}
+      ${photos.length > 1 ? `<div class="absolute bottom-3 left-3 right-3 flex justify-between items-end gap-2 pointer-events-none">
+        <span id="loc-modal-hero-caption" class="px-3 py-1.5 rounded-lg bg-black/70 text-white text-sm max-w-[75%] truncate">${escapeHtml(heroPhoto.caption || "")}</span>
+        <span class="px-3 py-1 rounded-full bg-black/70 text-white text-xs font-semibold"><span data-photo-cur>${startIdx + 1}</span> / ${photos.length}</span>
+      </div>` : ""}
 
       <span class="absolute top-3 right-3 px-3 py-1 rounded-full bg-white/95 text-ink-900 text-sm font-semibold shadow-sm">${escapeHtml(labelFor(l.category, "category"))}</span>
     </div>
+    ${thumbsHtml}
 
     <!-- SCROLLING BODY -->
     <div id="loc-modal-scroll" class="flex-1 overflow-y-auto">
@@ -819,9 +821,6 @@ function renderModalContent() {
 
         ${sources ? `<div class="mt-3 text-sm">${t("loc_source")}: ${sources}</div>` : ""}
 
-        <!-- Hint: swipe to next -->
-        ${list.length > 1 ? `<div class="text-center text-ink-500 text-sm py-3">${t("loc_swipe_hint")}</div>` : ""}
-
         <div class="h-6"></div>
       </div>
     </div>
@@ -837,10 +836,17 @@ function renderModalContent() {
          target="_blank" rel="noreferrer" aria-label="${t("loc_open_map")}">🗺️</a>
     </footer>
   `;
-  // Wire inner close + prev/next
+  // Wire inner close + thumbnail gallery
   document.getElementById("loc-modal-close-inner")?.addEventListener("click", closeLocModal);
-  body.querySelector("[data-modal-prev]")?.addEventListener("click", (e) => { e.stopPropagation(); pageModal(-1); });
-  body.querySelector("[data-modal-next]")?.addEventListener("click", (e) => { e.stopPropagation(); pageModal(+1); });
+  body.querySelectorAll("[data-thumb-idx]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const i = Number(btn.getAttribute("data-thumb-idx"));
+      setModalPhoto(i);
+      const cur = body.querySelector("[data-photo-cur]");
+      if (cur) cur.textContent = String(i + 1);
+    });
+  });
 }
 
 function shortUrl(u) { try { return new URL(u).host; } catch { return u; } }
@@ -981,7 +987,7 @@ document.addEventListener("click", (e) => {
 });
 document.getElementById("loc-modal-close")?.addEventListener("click", closeLocModal);
 document.getElementById("loc-modal")?.addEventListener("click", (e) => {
-  // close when clicking outside the swipe container
+  // close when clicking the dimmed backdrop (outside the card itself)
   if (e.target.id === "loc-modal") closeLocModal();
 });
 document.getElementById("btn-home-logo").onclick = () => go("home");
@@ -1007,8 +1013,12 @@ document.getElementById("diary-save").onclick = async () => {
 };
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape") { closeLocModal(); closeAddModal(); }
-  if (e.key === "ArrowLeft" && !document.getElementById("loc-modal").classList.contains("hidden")) pageModal(-1);
-  if (e.key === "ArrowRight" && !document.getElementById("loc-modal").classList.contains("hidden")) pageModal(+1);
+  const modalOpen = !document.getElementById("loc-modal").classList.contains("hidden");
+  const l = currentModalLocation();
+  if (modalOpen && l && Array.isArray(l.photos) && l.photos.length > 1) {
+    if (e.key === "ArrowLeft")  setModalPhoto(state.modalPhotoIndex - 1);
+    if (e.key === "ArrowRight") setModalPhoto(state.modalPhotoIndex + 1);
+  }
 });
 
 // ------------------------- Boot -------------------------

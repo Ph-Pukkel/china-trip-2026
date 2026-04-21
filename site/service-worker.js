@@ -1,12 +1,11 @@
 // service-worker.js — simple offline cache for Reisgenoot China 2026
-const VERSION = "v6-2026-04-21-geolocation-autoscroll";
+const VERSION = "v7-2026-04-21-gallery-euro-es";
 const CACHE = `china2026-${VERSION}`;
 const APP_SHELL = [
   "./",
   "./index.html",
   "./config.js",
   "./app.js",
-  "./swipe.js",
   "./planner.js",
   "./map.js",
   "./supabase-client.js",

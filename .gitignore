@@ -14,3 +14,9 @@ node_modules/
 .env
 .env.local
 .vercel/
+
+# One-off data patches (already applied into site/locations.json)
+site/photo-patches.json
+site/es-patches.json
+site/apply-photo-patches.js
+site/apply-es-patches.js

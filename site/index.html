@@ -191,10 +191,14 @@
     /* ---- Modal container ---- */
     #loc-modal { display: flex; }
     #loc-modal.hidden { display: none; }
-    #loc-modal-swipe {
-      will-change: transform, opacity;
-      user-select: none;
-      -webkit-user-select: none;
+
+    /* ---- Map screen: reserveer ruimte voor bottom tab-bar (68px tab + safe-area) ---- */
+    #screen-map {
+      padding-bottom: calc(88px + env(safe-area-inset-bottom));
+    }
+    #screen-map #map {
+      height: calc(100vh - 220px - env(safe-area-inset-bottom));
+      min-height: 360px;
     }
 
     /* Respect reduced motion — per design-system spec, global collapse */
@@ -205,7 +209,6 @@
       }
       .skeleton-shimmer::after { animation: none; }
       .toast { animation: none; }
-      #loc-modal-swipe { transition: none !important; }
     }
   </style>
 </head>
@@ -411,7 +414,7 @@
         <button class="map-city-btn h-10 px-4 rounded-full border border-line bg-bg-card focus-ring" data-city="xian" data-i18n="map_xian">Xi'an</button>
         <button class="map-city-btn h-10 px-4 rounded-full border border-line bg-bg-card focus-ring" data-city="all" data-i18n="map_all">Alles</button>
       </div>
-      <div id="map" class="h-[70vh] rounded-2xl border border-line bg-bg-card" aria-label="Interactieve kaart"></div>
+      <div id="map" class="rounded-2xl border border-line bg-bg-card" aria-label="Interactieve kaart"></div>
     </section>
 
     <!-- SCREEN: HELP -->
@@ -499,10 +502,10 @@
     </div>
   </nav>
 
-  <!-- MODAL: location detail (hero + swipe) -->
+  <!-- MODAL: location detail (hero + foto-gallery) -->
   <div id="loc-modal" class="fixed inset-0 z-50 hidden bg-black/75" role="dialog" aria-modal="true" aria-labelledby="loc-modal-title">
     <div class="max-w-2xl mx-auto w-full h-full flex flex-col p-0 sm:p-4">
-      <div id="loc-modal-swipe" class="flex-1 flex flex-col bg-bg-card sm:rounded-3xl overflow-hidden shadow-2xl" style="transform: translateX(0); transition: transform .3s cubic-bezier(.2,.8,.2,1), opacity .3s;">
+      <div class="flex-1 flex flex-col bg-bg-card sm:rounded-3xl overflow-hidden shadow-2xl">
         <div id="loc-modal-body" class="flex-1 flex flex-col min-h-0"></div>
       </div>
     </div>

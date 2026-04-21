@@ -15,6 +15,9 @@ window.APP_CONFIG = {
   // Open-Meteo weather (no key needed)
   WEATHER_API: "https://api.open-meteo.com/v1/forecast",
 
+  // FX — 1 CNY ≈ 0,13 EUR (april 2026, kan later automatisch bijgewerkt)
+  CNY_EUR_RATE: 0.13,
+
   // Default city center
   DEFAULT_CITY: "beijing",
 
